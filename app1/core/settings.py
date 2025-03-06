@@ -3,11 +3,17 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic import BaseModel, PostgresDsn
-from pydantic_settings import BaseSettings
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # load_dotenv('../.env.app1', override=False)
 load_dotenv('.env.app1', override=False)
+
+
+class CustomSettings(BaseSettings):
+    class Config:
+        env_file = '.env.app1'
+        case_sensitive = False
 
 
 class AppRunConfig(BaseModel):
@@ -81,7 +87,10 @@ class RunConfig(BaseModel):
     )
 
 
-class Settings(BaseSettings):
+class Settings(CustomSettings):
+    # model_config = SettingsConfigDict(
+    #     env_file='.env.app1'
+    # )
     app: AppSettings = AppSettings()
     swagger: SwaggerSettings = SwaggerSettings()
     tags: Tags = Tags()

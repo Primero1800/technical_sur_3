@@ -1,12 +1,28 @@
 import uvicorn
-from app1.core.config import AppConfigurer, SwaggerConfigurer
-from app1.core.settings import settings
 
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from app1.core.config import (
+    AppConfigurer, SwaggerConfigurer, DBConfigurer
+)
+from app1.core.settings import settings
 from app1.api import router as router_v1
+
+# Initialization
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    # startup
+    yield
+    # shutdown
+    await DBConfigurer.dispose()
+
 
 app = AppConfigurer.create_app(
     docs_url=None,
     redoc_url=None,
+    lifespan=lifespan,
 )
 
 app.openapi = AppConfigurer.get_custom_openapi(app)
@@ -17,9 +33,6 @@ app.include_router(
     router_v1,
     prefix=settings.app.API_V1_PREFIX,
 )
-
-
-
 
 
 SwaggerConfigurer.config_swagger(app, settings.app.APP_TITLE)

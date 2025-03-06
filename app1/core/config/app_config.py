@@ -7,21 +7,16 @@ from fastapi.openapi.utils import get_openapi
 from starlette.responses import JSONResponse
 
 from app1.core.settings import settings
+# from app1.core.config import DBConfigurer
 
 
 class AppConfigurer:
 
-    @staticmethod
-    @asynccontextmanager
-    async def lifespan(app: FastAPI):
-        # async with DBConfigurer.engine.begin() as conn:               ### NO NEED AFTER ALEMBIC ADDED
-        #     await conn.run_sync(Base.metadata.create_all)
-        yield
 
     @staticmethod
-    def create_app(docs_url, redoc_url) -> FastAPI:
+    def create_app(docs_url, redoc_url, lifespan) -> FastAPI:
         app = FastAPI(
-            lifespan=AppConfigurer.lifespan,
+            lifespan=lifespan,
             docs_url=docs_url,
             redoc_url=redoc_url,
         )

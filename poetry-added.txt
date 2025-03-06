@@ -1,9 +1,16 @@
 pip install poetry
 
+add
 
-uvicorn[standard]
-pydantic[email]
-pydantic-settings
-sqlalchemy[asyncio]
-asyncpg
+    uvicorn[standard]
+    pydantic[email]
+    pydantic-settings
+    sqlalchemy[asyncio]
+    asyncpg
+    alembic
+
+
+add --group dev
+
+    black
 

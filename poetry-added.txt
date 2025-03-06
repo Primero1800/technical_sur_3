@@ -1,0 +1,7 @@
+pip install poetry
+
+
+uvicorn[standard]
+pydantic[email]
+pydantic-settings
+

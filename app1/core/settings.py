@@ -3,38 +3,47 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 
-load_dotenv()
+# load_dotenv('../.env.app1', override=False)
+load_dotenv('.env.app1', override=False)
 
 
-class AppSettings:
-    APP_BASE_DIR = Path(__file__).resolve().parent.parent.parent
+class AppRunConfig(BaseModel):
+    app: str
+    host: str
+    port: int
+    reload: bool
+
+
+class AppSettings(BaseModel):
+    APP_BASE_DIR: str = Path(__file__).resolve().parent.parent
     APP_TITLE: str = os.getenv('APP_TITLE')
     APP_VERSION: str = os.getenv('APP_VERSION')
     APP_DESCRIPTION: str = os.getenv('APP_DESCRIPTION')
 
-    API_PREFIX = os.getenv('API_PREFIX')
-    API_V1_PREFIX = API_PREFIX + os.getenv('API_V1_PREFIX')
+    API_PREFIX: str = os.getenv('API_PREFIX')
+    API_V1_PREFIX: str = API_PREFIX + os.getenv('API_V1_PREFIX')
 
     APP_422_CODE_STATUS: int = int(os.getenv('APP_422_CODE_STATUS'))
 
 
-class SwaggerSettings:
+class SwaggerSettings(BaseModel):
     pass
 
 
-class Tags:
-    TECH_TAG = os.getenv('APP1_TECH_TAG')
+class Tags(BaseModel):
+    TECH_TAG: str = os.getenv('APP1_TECH_TAG')
     # USERS_TAG = os.getenv('USERS_TAG')
-    ROOT_TAG = os.getenv('APP1_ROOT_TAG')
-    SWAGGER_TAG = os.getenv('APP1_SWAGGER_TAG')
+    ROOT_TAG: str = os.getenv('APP1_ROOT_TAG')
+    SWAGGER_TAG: str = os.getenv('APP1_SWAGGER_TAG')
     # PRODUCTS_TAG = os.getenv('PRODUCTS_TAG')
-    AUTH_TAG = os.getenv('APP1_AUTH_TAG')
-    JWT_AUTH_TAG = os.getenv('APP1_JWT_AUTH_TAG')
+    AUTH_TAG: str = os.getenv('APP1_AUTH_TAG')
+    JWT_AUTH_TAG: str = os.getenv('APP1_JWT_AUTH_TAG')
 
 
-# class DB:
+# class DB(BaseModel):
 #
 #     DB_NAME = os.getenv('DB_NAME_TEST') if 'pytest' in sys.modules else os.getenv('DB_NAME')
 #     DB_ENGINE = os.getenv('DB_ENGINE')
@@ -50,7 +59,7 @@ class Tags:
 #     DB_URL = None
 
 
-# class AuthJWT:
+# class AuthJWT(BaseModel):
 #     private_key = AppSettings.APP_BASE_DIR / "src" / "core" / "config"/"certs"/"jwt-private.pem"
 #     public_key = AppSettings.APP_BASE_DIR / "src" / "core" / "config"/"certs"/"jwt-public.pem"
 #     algorithm = os.getenv('JWT_ALGORYTHM')
@@ -62,10 +71,20 @@ class Tags:
 #     default_password = os.getenv('DEFAULT_PASSWORD')
 
 
+class RunConfig(BaseModel):
+    app1: AppRunConfig = AppRunConfig(
+        app=os.getenv('APP_PATH'),
+        host=os.getenv('APP_HOST'),
+        port=int(os.getenv('APP_PORT')),
+        reload=True if os.getenv('APP_RELOAD') == 'True' else False,
+    )
+
+
 class Settings(BaseSettings):
     app: AppSettings = AppSettings()
     swagger: SwaggerSettings = SwaggerSettings()
     tags: Tags = Tags()
+    run: RunConfig = RunConfig()
     # db: DB = DB()
     # auth_jwt: AuthJWT = AuthJWT()
 

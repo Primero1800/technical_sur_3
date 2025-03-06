@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+import uvicorn
 from app1.core.config import AppConfigurer, SwaggerConfigurer
-from .core.settings import settings
+from app1.core.settings import settings
+
+from app1.api import router as router_v1
 
 app = AppConfigurer.create_app(
     docs_url=None,
@@ -11,7 +13,10 @@ app.openapi = AppConfigurer.get_custom_openapi(app)
 
 # ROUTERS
 
-
+app.include_router(
+    router_v1,
+    prefix=settings.app.API_V1_PREFIX,
+)
 
 
 
@@ -44,4 +49,14 @@ def echo(thing):
 async def get_routes_endpoint():
     return await SwaggerConfigurer.get_routes(
         application=app,
+    )
+
+
+if __name__ == "__main__":
+    # uvicorn app1.main:app --host 0.0.0.0 --reload
+    uvicorn.run(
+        app=settings.run.app1.app,
+        host=settings.run.app1.host,
+        port=settings.run.app1.port,
+        reload=settings.run.app1.reload,
     )

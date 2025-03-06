@@ -55,6 +55,7 @@ class DB(BaseModel):
     DB_TABLE_PREFIX: str = os.getenv('DB_TABLE_PREFIX')
 
     DB_ECHO_MODE: bool = True if os.getenv('DB_ECHO_MODE') == 'True' else False
+    DB_POOL_SIZE: int = int(os.getenv('DB_POOL_SIZE'))
 
     DB_URL: str = None
 

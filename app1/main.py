@@ -7,6 +7,8 @@ from app1.core.config import (
 )
 from app1.core.settings import settings
 from app1.api import router as router_v1
+from app1.core.models import Base
+
 
 # Initialization
 
@@ -14,6 +16,8 @@ from app1.api import router as router_v1
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     # startup
+    # async with DBConfigurer.engine.begin()  as conn:
+    #     await conn.run_sync(Base.metadata.drop_all)
     yield
     # shutdown
     await DBConfigurer.dispose()

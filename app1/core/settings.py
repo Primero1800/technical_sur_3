@@ -35,7 +35,7 @@ class SwaggerSettings(BaseModel):
 
 class Tags(BaseModel):
     TECH_TAG: str = os.getenv('TECH_TAG')
-    ROOT_TAG: str = None
+    ROOT_TAG: str = os.getenv('ROOT_TAG')
     SWAGGER_TAG: str = os.getenv('SWAGGER_TAG')
     AUTH_TAG: str = os.getenv('AUTH_TAG')
     JWT_AUTH_TAG: str = os.getenv('JWT_AUTH_TAG')

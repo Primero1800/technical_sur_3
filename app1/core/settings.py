@@ -10,17 +10,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 load_dotenv('.env.app1', override=False)
 
 
-class CustomSettings(BaseSettings):
-    class Config:
-        env_file = '.env.app1'
-        case_sensitive = False
-
-
 class AppRunConfig(BaseModel):
-    app: str
-    host: str
-    port: int
-    reload: bool
+    app_path: str
+    app_host: str
+    app_port: int
+    app_reload: bool
 
 
 class AppSettings(BaseModel):
@@ -40,13 +34,11 @@ class SwaggerSettings(BaseModel):
 
 
 class Tags(BaseModel):
-    TECH_TAG: str = os.getenv('APP1_TECH_TAG')
-    # USERS_TAG = os.getenv('USERS_TAG')
-    ROOT_TAG: str = os.getenv('APP1_ROOT_TAG')
-    SWAGGER_TAG: str = os.getenv('APP1_SWAGGER_TAG')
-    # PRODUCTS_TAG = os.getenv('PRODUCTS_TAG')
-    AUTH_TAG: str = os.getenv('APP1_AUTH_TAG')
-    JWT_AUTH_TAG: str = os.getenv('APP1_JWT_AUTH_TAG')
+    TECH_TAG: str = os.getenv('TECH_TAG')
+    ROOT_TAG: str = None
+    SWAGGER_TAG: str = os.getenv('SWAGGER_TAG')
+    AUTH_TAG: str = os.getenv('AUTH_TAG')
+    JWT_AUTH_TAG: str = os.getenv('JWT_AUTH_TAG')
 
 
 class DB(BaseModel):
@@ -80,22 +72,25 @@ class DB(BaseModel):
 
 class RunConfig(BaseModel):
     app1: AppRunConfig = AppRunConfig(
-        app=os.getenv('APP_PATH'),
-        host=os.getenv('APP_HOST'),
-        port=int(os.getenv('APP_PORT')),
-        reload=True if os.getenv('APP_RELOAD') == 'True' else False,
+        app_path=os.getenv('APP_PATH'),
+        app_host=os.getenv('APP_HOST'),
+        app_port=int(os.getenv('APP_PORT')),
+        app_reload=True if os.getenv('APP_RELOAD') == 'True' else False,
     )
 
 
-class Settings(CustomSettings):
-    # model_config = SettingsConfigDict(
-    #     env_file='.env.app1'
-    # )
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file='.env.app1',
+        case_sensitive=False,
+        extra='ignore',
+    )
     app: AppSettings = AppSettings()
     swagger: SwaggerSettings = SwaggerSettings()
     tags: Tags = Tags()
     run: RunConfig = RunConfig()
     db: DB = DB()
+    test: str
     # auth_jwt: AuthJWT = AuthJWT()
 
 

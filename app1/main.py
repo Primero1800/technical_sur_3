@@ -68,8 +68,8 @@ async def get_routes_endpoint():
 if __name__ == "__main__":
     # uvicorn app1.main:app --host 0.0.0.0 --reload
     uvicorn.run(
-        app=settings.run.app1.app,
-        host=settings.run.app1.host,
-        port=settings.run.app1.port,
-        reload=settings.run.app1.reload,
+        app=settings.run.app1.app_path,
+        host=settings.run.app1.app_host,
+        port=settings.run.app1.app_port,
+        reload=settings.run.app1.app_reload,
     )

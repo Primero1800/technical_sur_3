@@ -43,20 +43,20 @@ class Tags(BaseModel):
     JWT_AUTH_TAG: str = os.getenv('APP1_JWT_AUTH_TAG')
 
 
-# class DB(BaseModel):
-#
-#     DB_NAME = os.getenv('DB_NAME_TEST') if 'pytest' in sys.modules else os.getenv('DB_NAME')
-#     DB_ENGINE = os.getenv('DB_ENGINE')
-#     DB_USER = os.getenv('DB_USER')
-#     DB_PASSWORD = os.getenv('DB_PASSWORD')
-#     DB_HOST = os.getenv('DB_HOST')
-#     DB_PORT = os.getenv('DB_PORT')
-#
-#     DB_TABLE_PREFIX = os.getenv('DB_TABLE_PREFIX')
-#
-#     DB_ECHO_MODE = True if os.getenv('DB_ECHO_MODE') == 'True' else False
-#
-#     DB_URL = None
+class DB(BaseModel):
+
+    DB_NAME: str = os.getenv('DB_NAME_TEST') if 'pytest' in sys.modules else os.getenv('DB_NAME')
+    DB_ENGINE: str = os.getenv('DB_ENGINE')
+    DB_USER: str = os.getenv('DB_USER')
+    DB_PASSWORD: str = os.getenv('DB_PASSWORD')
+    DB_HOST: str = os.getenv('DB_HOST')
+    DB_PORT: str = int(os.getenv('DB_PORT'))
+
+    DB_TABLE_PREFIX: str = os.getenv('DB_TABLE_PREFIX')
+
+    DB_ECHO_MODE: bool = True if os.getenv('DB_ECHO_MODE') == 'True' else False
+
+    DB_URL: str = None
 
 
 # class AuthJWT(BaseModel):
@@ -85,22 +85,22 @@ class Settings(BaseSettings):
     swagger: SwaggerSettings = SwaggerSettings()
     tags: Tags = Tags()
     run: RunConfig = RunConfig()
-    # db: DB = DB()
+    db: DB = DB()
     # auth_jwt: AuthJWT = AuthJWT()
 
 
 settings = Settings()
 
 
-# def get_db_connection():
-#     return '{}://{}:{}@{}:{}/{}'.format(
-#         settings.db.DB_ENGINE,
-#         settings.db.DB_USER,
-#         settings.db.DB_PASSWORD,
-#         settings.db.DB_HOST,
-#         settings.db.DB_PORT,
-#         settings.db.DB_NAME,
-#     )
-#
-#
-# settings.db.DB_URL = get_db_connection()
+def get_db_connection() -> str:
+    return '{}://{}:{}@{}:{}/{}'.format(
+        settings.db.DB_ENGINE,
+        settings.db.DB_USER,
+        settings.db.DB_PASSWORD,
+        settings.db.DB_HOST,
+        settings.db.DB_PORT,
+        settings.db.DB_NAME,
+    )
+
+
+settings.db.DB_URL = get_db_connection()

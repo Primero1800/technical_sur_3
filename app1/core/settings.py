@@ -10,52 +10,62 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 load_dotenv('.env.app1', override=False)
 
 
-class AppRunConfig(BaseModel):
+class CustomSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file='.env.app1',
+        case_sensitive=False,
+        extra='allow',
+        env_prefix='',
+        env_nested_delimiter='',
+    )
+
+
+class AppRunConfig(CustomSettings):
     app_path: str
     app_host: str
     app_port: int
     app_reload: bool
 
 
-class AppSettings(BaseModel):
-    APP_BASE_DIR: str = Path(__file__).resolve().parent.parent
-    APP_TITLE: str = os.getenv('APP_TITLE')
-    APP_VERSION: str = os.getenv('APP_VERSION')
-    APP_DESCRIPTION: str = os.getenv('APP_DESCRIPTION')
+class AppSettings(CustomSettings):
+    APP_BASE_DIR: str = str(Path(__file__).resolve().parent.parent)
+    APP_TITLE: str
+    APP_VERSION: str
+    APP_DESCRIPTION: str
 
-    API_PREFIX: str = os.getenv('API_PREFIX')
-    API_V1_PREFIX: str = API_PREFIX + os.getenv('API_V1_PREFIX')
+    API_PREFIX: str
+    API_V1_PREFIX: str
 
-    APP_422_CODE_STATUS: int = int(os.getenv('APP_422_CODE_STATUS'))
+    APP_422_CODE_STATUS: int
 
 
 class SwaggerSettings(BaseModel):
     pass
 
 
-class Tags(BaseModel):
-    TECH_TAG: str = os.getenv('TECH_TAG')
-    ROOT_TAG: str = os.getenv('ROOT_TAG')
-    SWAGGER_TAG: str = os.getenv('SWAGGER_TAG')
-    AUTH_TAG: str = os.getenv('AUTH_TAG')
-    JWT_AUTH_TAG: str = os.getenv('JWT_AUTH_TAG')
+class Tags(CustomSettings):
+    TECH_TAG: str
+    ROOT_TAG: str
+    SWAGGER_TAG: str
+    AUTH_TAG: str
+    JWT_AUTH_TAG: str
 
 
-class DB(BaseModel):
+class DB(CustomSettings):
 
     DB_NAME: str = os.getenv('DB_NAME_TEST') if 'pytest' in sys.modules else os.getenv('DB_NAME')
-    DB_ENGINE: str = os.getenv('DB_ENGINE')
-    DB_USER: str = os.getenv('DB_USER')
-    DB_PASSWORD: str = os.getenv('DB_PASSWORD')
-    DB_HOST: str = os.getenv('DB_HOST')
-    DB_PORT: str = int(os.getenv('DB_PORT'))
+    DB_ENGINE: str
+    DB_USER: str
+    DB_PASSWORD: str
+    DB_HOST: str
+    DB_PORT: str
 
-    DB_TABLE_PREFIX: str = os.getenv('DB_TABLE_PREFIX')
+    DB_TABLE_PREFIX: str
 
     DB_ECHO_MODE: bool = True if os.getenv('DB_ECHO_MODE') == 'True' else False
-    DB_POOL_SIZE: int = int(os.getenv('DB_POOL_SIZE'))
+    DB_POOL_SIZE: int
 
-    DB_URL: str = None
+    DB_URL: str = ''
 
 
 # class AuthJWT(BaseModel):
@@ -72,26 +82,18 @@ class DB(BaseModel):
 
 class RunConfig(BaseModel):
     app1: AppRunConfig = AppRunConfig(
-        app_path=os.getenv('APP_PATH'),
-        app_host=os.getenv('APP_HOST'),
-        app_port=int(os.getenv('APP_PORT')),
         app_reload=True if os.getenv('APP_RELOAD') == 'True' else False,
     )
 
 
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file='.env.app1',
-        case_sensitive=False,
-        extra='ignore',
-    )
+class Settings(CustomSettings):
     app: AppSettings = AppSettings()
     swagger: SwaggerSettings = SwaggerSettings()
     tags: Tags = Tags()
     run: RunConfig = RunConfig()
     db: DB = DB()
-    test: str
     # auth_jwt: AuthJWT = AuthJWT()
+    test: int
 
 
 settings = Settings()

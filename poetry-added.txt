@@ -4,4 +4,6 @@ pip install poetry
 uvicorn[standard]
 pydantic[email]
 pydantic-settings
+sqlalchemy[asyncio]
+asyncpg
 

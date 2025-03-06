@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings
 
 # load_dotenv('../.env.app1', override=False)

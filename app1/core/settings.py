@@ -12,7 +12,7 @@ load_dotenv('.env.app1', override=False)
 
 class CustomSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file='.env.app1',
+        env_file=('.env.app1.template', '.env.app1'),
         case_sensitive=False,
         extra='allow',
         env_prefix='',

@@ -62,7 +62,7 @@ class DB(CustomSettings):
 
     DB_TABLE_PREFIX: str
 
-    DB_ECHO_MODE: bool = True if os.getenv('DB_ECHO_MODE') == 'True' else False
+    DB_ECHO_MODE: bool
     DB_POOL_SIZE: int
 
     DB_URL: str = ''
@@ -81,9 +81,7 @@ class DB(CustomSettings):
 
 
 class RunConfig(BaseModel):
-    app1: AppRunConfig = AppRunConfig(
-        app_reload=True if os.getenv('APP_RELOAD') == 'True' else False,
-    )
+    app1: AppRunConfig = AppRunConfig()
 
 
 class Settings(CustomSettings):
@@ -93,7 +91,6 @@ class Settings(CustomSettings):
     run: RunConfig = RunConfig()
     db: DB = DB()
     # auth_jwt: AuthJWT = AuthJWT()
-    test: int
 
 
 settings = Settings()

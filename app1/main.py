@@ -48,7 +48,7 @@ AppConfigurer.config_validation_exception_handler(app)
 @app.get("/", tags=[settings.tags.ROOT_TAG,],)
 @app.get("", tags=[settings.tags.ROOT_TAG,], include_in_schema=False,)
 def top():
-    return f"top here test {settings.test} -- {type(settings.test)}"
+    return f"top here test"
 
 
 @app.get("/echo/{thing}/", tags=[settings.tags.TECH_TAG,],)

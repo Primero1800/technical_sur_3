@@ -8,6 +8,7 @@ add
     sqlalchemy[asyncio]
     asyncpg
     alembic
+    python-multipart
 
 
 add --group dev

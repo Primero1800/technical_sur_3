@@ -12,7 +12,6 @@ from app1.core.settings import settings
 from app1.core import errors
 
 
-
 class AppConfigurer:
 
 

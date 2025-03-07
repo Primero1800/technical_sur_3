@@ -47,6 +47,7 @@ class Tags(CustomSettings):
     SWAGGER_TAG: str
     AUTH_TAG: str
     JWT_AUTH_TAG: str
+    USERS_TAG: str
 
 
 class DB(CustomSettings):
@@ -114,4 +115,3 @@ def get_db_connection() -> str:
 
 
 settings.db.DB_URL = get_db_connection()
-settings.app.API_V1_PREFIX = settings.app.API_PREFIX + settings.app.API_V1_PREFIX

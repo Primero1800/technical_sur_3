@@ -15,8 +15,6 @@ from app1.api import router as router_v1
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     # startup
-    # async with DBConfigurer.engine.begin()  as conn:
-    #     await conn.run_sync(Base.metadata.drop_all)
     yield
     # shutdown
     await DBConfigurer.dispose()
@@ -51,7 +49,7 @@ AppConfigurer.config_validation_exception_handler(app)
 @app.get("/", tags=[settings.tags.ROOT_TAG,],)
 @app.get("", tags=[settings.tags.ROOT_TAG,], include_in_schema=False,)
 def top():
-    return f"top here test"
+    return f"top here test {settings.app.API_V1_PREFIX}"
 
 
 @app.get("/echo/{thing}/", tags=[settings.tags.TECH_TAG,],)
@@ -73,6 +71,6 @@ if __name__ == "__main__":
     uvicorn.run(
         app=settings.run.app1.app_path,
         host=settings.run.app1.app_host,
-        port=settings.run.app1.app_port,
+        port=8080,                                 # original 8000 used in uvicorn server, started from system bash
         reload=settings.run.app1.app_reload,
     )

@@ -2,18 +2,15 @@ import os
 import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-# load_dotenv('../.env.app1', override=False)
-load_dotenv('.env.app1', override=False)
-load_dotenv('app1/.env.app1', override=False)
 
 
 class CustomSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=('.env.app1.template', '.env.app1', 'app1/.env.app1', 'app1/.env.app1.template'),
+        env_file=(
+            '.env.app1.template', '.env.app1', 'app1/.env.app1.template', 'app1/.env.app1',
+        ),
         case_sensitive=False,
         extra='allow',
         env_prefix='',
@@ -109,3 +106,4 @@ def get_db_connection() -> str:
 
 
 settings.db.DB_URL = get_db_connection()
+settings.app.API_V1_PREFIX = settings.app.API_PREFIX + settings.app.API_V1_PREFIX

@@ -32,9 +32,8 @@ class DBConfigurerInitializer:
             connection_path: str,
             echo: bool,
             pool_size: int,
-
     ):
-        self.connection_path=connection_path
+        self.connection_path = connection_path
         self.engine: AsyncEngine = create_async_engine(
             url=self.connection_path,
             echo=echo,

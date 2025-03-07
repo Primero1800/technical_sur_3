@@ -4,9 +4,14 @@ from typing import Callable, Dict, Any
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
+from sqlalchemy.exc import IntegrityError
+from starlette import status
 from starlette.responses import JSONResponse
 
 from app1.core.settings import settings
+from app1.core import errors
+
+
 # from app1.core.config import DBConfigurer
 
 
@@ -44,5 +49,16 @@ class AppConfigurer:
         async def validation_exception_handler(request, exc: RequestValidationError):
             return JSONResponse(
                 status_code=settings.app.APP_422_CODE_STATUS,
-                content={"detail": exc.errors(), "body": exc.body},
+                content={
+                    "detail": exc.errors(),
+                },
+            )
+
+        @app.exception_handler(IntegrityError)
+        async def validation_exception_handler2(request, exc: IntegrityError):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={
+                    "detail": errors.get_message(exc)
+                },
             )

@@ -6,7 +6,7 @@ from app1.core.config import (
     AppConfigurer, SwaggerConfigurer, DBConfigurer
 )
 from app1.core.settings import settings
-from app1.api import router as router_v1
+from app1.api import router as router_api
 
 
 # Initialization
@@ -31,8 +31,8 @@ app.openapi = AppConfigurer.get_custom_openapi(app)
 # ROUTERS
 
 app.include_router(
-    router_v1,
-    prefix=settings.app.API_V1_PREFIX,
+    router_api,
+    prefix=settings.app.API_PREFIX,
 )
 
 
@@ -41,7 +41,9 @@ SwaggerConfigurer.config_swagger(app, settings.app.APP_TITLE)
 ######################################################################
 
 SwaggerConfigurer.delete_router_tag(app)
-AppConfigurer.config_validation_exception_handler(app)
+
+# uncomment, if need custom exception_handler
+# AppConfigurer.config_validation_exception_handler(app)
 
 # ROUTES
 

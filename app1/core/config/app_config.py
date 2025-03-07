@@ -1,9 +1,9 @@
-from contextlib import asynccontextmanager
 from typing import Callable, Dict, Any
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.exc import IntegrityError
 from starlette import status
 from starlette.responses import JSONResponse
@@ -12,8 +12,6 @@ from app1.core.settings import settings
 from app1.core import errors
 
 
-# from app1.core.config import DBConfigurer
-
 
 class AppConfigurer:
 
@@ -21,6 +19,7 @@ class AppConfigurer:
     @staticmethod
     def create_app(docs_url, redoc_url, lifespan) -> FastAPI:
         app = FastAPI(
+            default_response_class=ORJSONResponse,
             lifespan=lifespan,
             docs_url=docs_url,
             redoc_url=redoc_url,

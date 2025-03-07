@@ -8,11 +8,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # load_dotenv('../.env.app1', override=False)
 load_dotenv('.env.app1', override=False)
+load_dotenv('app1/.env.app1', override=False)
 
 
 class CustomSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=('.env.app1.template', '.env.app1'),
+        env_file=('.env.app1.template', '.env.app1', 'app1/.env.app1', 'app1/.env.app1.template'),
         case_sensitive=False,
         extra='allow',
         env_prefix='',

@@ -7,7 +7,6 @@ from app1.core.config import (
 )
 from app1.core.settings import settings
 from app1.api import router as router_v1
-from app1.core.models import Base
 
 
 # Initialization

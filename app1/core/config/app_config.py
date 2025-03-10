@@ -1,6 +1,6 @@
 from typing import Callable, Dict, Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import ORJSONResponse
@@ -53,10 +53,8 @@ class AppConfigurer:
             )
 
         @app.exception_handler(IntegrityError)
-        async def validation_exception_handler2(request, exc: IntegrityError):
-            return JSONResponse(
+        async def validation_exception_handler_constraints(request, exc: IntegrityError):
+            raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                content={
-                    "detail": errors.get_message(exc),
-                },
+                detail=f"{errors.get_message(exc)}",
             )

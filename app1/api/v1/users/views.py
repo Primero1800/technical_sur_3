@@ -38,13 +38,13 @@ async def create_user(
     user: UserCreate = Form(),
     session: AsyncSession = Depends(DBConfigurer.session_getter),
 ):
-    try:
-        return await users_crud.create_user(
-            session=session,
-            instance=user,
-        )
-    except errors.Validation as error:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=error.msg
-        )
+    # try:
+    return await users_crud.create_user(
+        session=session,
+        instance=user,
+    )
+    # except errors.Validation as error:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail=error.msg
+    #     )

@@ -18,6 +18,34 @@ async def get_users(
     return result.scalars().all()
 
 
+async def get_user_by_id(
+        session: AsyncSession,
+        user_id: int
+) -> User:
+    stmt = select(User).where(User.id == user_id)
+    result: Result = await session.execute(stmt)
+    user: User = result.scalar_one_or_none()
+    if not user:
+        raise errors.Missing(
+            msg=f"User with id={user_id} not found"
+        )
+    return user
+
+
+async def get_user_by_name(
+        session: AsyncSession,
+        username: str
+) -> User:
+    stmt = select(User).where(User.username == username)
+    result: Result = await session.execute(stmt)
+    user: User = result.scalar_one_or_none()
+    if not user:
+        raise errors.Missing(
+            msg=f"User with username={username} not found"
+        )
+    return user
+
+
 async def create_user(
         session: AsyncSession,
         instance: UserCreate

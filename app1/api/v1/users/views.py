@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, HTTPException
+from fastapi import APIRouter, Depends, Form, HTTPException, Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -22,10 +22,38 @@ async def users_root():
     response_model=list[UserRead],
 )
 async def get_users(
-        session: AsyncSession = Depends(DBConfigurer.session_getter)
+    session: AsyncSession = Depends(DBConfigurer.session_getter)
 ):
     return await users_crud.get_users(
         session=session
+    )
+
+
+@router.get(
+    "/users/user_by_name/",
+    response_model=UserRead,
+)
+async def get_user_by_name(
+    username: str,
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
+):
+    return await users_crud.get_user_by_name(
+        session=session,
+        username=username,
+    )
+
+
+@router.get(
+    "/users/{user_id}/",
+    response_model=UserRead,
+)
+async def get_user_by_id(
+    user_id: int,
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
+):
+    return await users_crud.get_user_by_id(
+        session=session,
+        user_id=user_id,
     )
 
 

@@ -57,6 +57,6 @@ class AppConfigurer:
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 content={
-                    "detail": errors.get_message(exc)
+                    "detail": errors.get_message(exc),
                 },
             )

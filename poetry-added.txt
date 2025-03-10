@@ -9,7 +9,7 @@ add
     asyncpg
     alembic
     python-multipart
-
+    orjson
 
 add --group dev
 

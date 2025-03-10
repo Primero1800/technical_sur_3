@@ -43,7 +43,7 @@ SwaggerConfigurer.config_swagger(app, settings.app.APP_TITLE)
 SwaggerConfigurer.delete_router_tag(app)
 
 # uncomment, if need custom exception_handler
-# AppConfigurer.config_validation_exception_handler(app)
+AppConfigurer.config_validation_exception_handler(app)
 
 # ROUTES
 

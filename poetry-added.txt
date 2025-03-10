@@ -10,6 +10,7 @@ add
     alembic
     python-multipart
     orjson
+    gunicorn
 
 add --group dev
 

@@ -69,6 +69,7 @@ async def get_routes_endpoint():
 
 
 if __name__ == "__main__":
+    # gunicorn app1.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
     # uvicorn app1.main:app --host 0.0.0.0 --reload
     uvicorn.run(
         app=settings.run.app1.app_path,

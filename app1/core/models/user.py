@@ -14,5 +14,5 @@ if TYPE_CHECKING:
 class User(Base, IDIntPkMixin, SQLAlchemyBaseUserTable[int]):
 
     @classmethod
-    def det_db(cls, session: "AsyncSession"):
+    def get_db(cls, session: "AsyncSession"):
         return SQLAlchemyUserDatabase(session,  cls)

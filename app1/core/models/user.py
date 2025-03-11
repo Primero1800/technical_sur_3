@@ -15,4 +15,4 @@ class User(Base, IDIntPkMixin, SQLAlchemyBaseUserTable[int]):
 
     @classmethod
     def det_db(cls, session: "AsyncSession"):
-        return SQLAlchemyUserDatabase(session,  User)
+        return SQLAlchemyUserDatabase(session,  cls)

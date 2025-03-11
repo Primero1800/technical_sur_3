@@ -43,6 +43,8 @@ class SwaggerSettings(BaseModel):
 
 class AccessTokenSettings(CustomSettings):
     ACCESS_TOKEN_LIFETIME: int
+    RESET_PASSWORD_TOKEN_SECRET: str
+    VERIFICATION_TOKEN_SECRET: str
 
 
 class Tags(CustomSettings):

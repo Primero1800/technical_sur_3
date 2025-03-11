@@ -2,8 +2,8 @@ from fastapi_users.db import (
     SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase,
 )
 
-from .base import Base
-from .mixins import IDIntPkMixin
+from app1.core.models.base import Base
+from app1.core.models.mixins import IDIntPkMixin
 
 
 class User(Base, IDIntPkMixin, SQLAlchemyBaseUserTable[int]):

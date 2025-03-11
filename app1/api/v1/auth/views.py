@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from fastapi_users import FastAPIUsers
 from sqlalchemy import Integer
 
+from app1.api.v1.schemas.user import UserRead, UserCreate
 from app1.api.dependencies.backend import authentication_backend
 from app1.api.dependencies.user_manager import get_user_manager
 
@@ -16,6 +17,14 @@ fastapi_users = FastAPIUsers["User", Integer](
 )
 
 router = APIRouter()
+
+# /login
+# /logout
 router.include_router(
     fastapi_users.get_auth_router(authentication_backend)
+)
+
+# /register
+router.include_router(
+    fastapi_users.get_register_router(UserRead, UserCreate),
 )

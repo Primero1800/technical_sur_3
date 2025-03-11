@@ -12,6 +12,10 @@ add
     orjson
     gunicorn
 
+    fastapi-users[sqlalchemy]
+
+
+
 add --group dev
 
     black

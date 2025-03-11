@@ -1,9 +1,7 @@
 import logging
-import uuid
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Union, Dict, Any
 
-from fastapi import Depends
-from fastapi_users import BaseUserManager, IntegerIDMixin
+from fastapi_users import BaseUserManager, IntegerIDMixin, schemas, models, InvalidPasswordException
 
 
 from app1.core.settings import settings
@@ -12,6 +10,7 @@ if TYPE_CHECKING:
     from ..models import User
     from sqlalchemy import Integer
     from fastapi import Request
+    from starlette.responses import Response
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +27,40 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
     ):
         log.warning("%r has forgot their password. Reset token: %r".format(user, token))
 
+    async def on_after_reset_password(
+            self, user: "User", request: Optional["Request"] = None):
+        log.warning("%r has reset their password.".format(user))
+
     async def on_after_request_verify(
         self, user: "User", token: str, request: Optional["Request"] = None
     ):
         log.warning(f"Verification requested for %r. Verification token: %r".format(user, token))
+
+    async def on_after_update(
+            self, user: "User", update_dict: Dict[str, Any],
+            request: Optional["Request"] = None,
+    ):
+        log.warning("%r has been updated with %r".format(user, update_dict))
+
+    async def on_after_delete(
+            self, user: "User", request: Optional["Request"] = None):
+        log.info(f"%r is successfully deleted".format(user))
+
+    async def on_after_login(
+            self, user: "User",
+            request: Optional["Request"] = None,
+            response: Optional["Response"] = None,
+    ):
+        log.info("%r logged in.".format(user))
+
+    async def validate_password(
+        self, password: str, user: Union[schemas.UC, models.UP]
+    ) -> None:
+        if len(password) < 8:
+            raise InvalidPasswordException(
+                reason="Password should be at least 8 characters"
+            )
+        if user.email in password:
+            raise InvalidPasswordException(
+                reason="Password should not contain e-mail"
+            )

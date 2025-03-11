@@ -16,3 +16,9 @@ class User(Base, IDIntPkMixin, SQLAlchemyBaseUserTable[int]):
     @classmethod
     def get_db(cls, session: "AsyncSession"):
         return SQLAlchemyUserDatabase(session,  cls)
+
+    def __str__(self):
+        return f"{self.__class__.__name__}(id={self.id}, email={self.email})"
+
+    def __repr__(self):
+        return str(self)

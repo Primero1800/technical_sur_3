@@ -53,6 +53,7 @@ class Tags(CustomSettings):
 class DB(CustomSettings):
 
     DB_NAME: str = os.getenv('DB_NAME_TEST') if 'pytest' in sys.modules else os.getenv('DB_NAME')
+    DB_NAME_TEST: str
     DB_ENGINE: str
     DB_USER: str
     DB_PASSWORD: str
@@ -65,6 +66,7 @@ class DB(CustomSettings):
     DB_POOL_SIZE: int
 
     DB_URL: str = ''
+    DB_TEST_URL: str = ''
 
     NAMING_CONVENTION: dict[str, str] = {
         "ix": "ix_%(column_0_label)s",
@@ -103,15 +105,16 @@ class Settings(CustomSettings):
 settings = Settings()
 
 
-def get_db_connection() -> str:
+def get_db_connection(db_name: str) -> str:
     return '{}://{}:{}@{}:{}/{}'.format(
         settings.db.DB_ENGINE,
         settings.db.DB_USER,
         settings.db.DB_PASSWORD,
         settings.db.DB_HOST,
         settings.db.DB_PORT,
-        settings.db.DB_NAME,
+        db_name,
     )
 
 
-settings.db.DB_URL = get_db_connection()
+settings.db.DB_URL = get_db_connection(settings.db.DB_NAME)
+settings.db.DB_TEST_URL = get_db_connection(settings.db.DB_NAME_TEST)

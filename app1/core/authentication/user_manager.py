@@ -1,5 +1,6 @@
 import logging
 from typing import Optional, TYPE_CHECKING, Union, Dict, Any
+from sqlalchemy import Integer
 
 from fastapi_users import BaseUserManager, IntegerIDMixin, schemas, models, InvalidPasswordException
 
@@ -8,7 +9,6 @@ from app1.core.settings import settings
 
 if TYPE_CHECKING:
     from ..models import User
-    from sqlalchemy import Integer
     from fastapi import Request
     from starlette.responses import Response
 

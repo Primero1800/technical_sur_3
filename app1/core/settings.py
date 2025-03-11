@@ -52,6 +52,7 @@ class Tags(CustomSettings):
     ROOT_TAG: str
     SWAGGER_TAG: str
     AUTH_TAG: str
+    AUTH_PREFIX: str
     JWT_AUTH_TAG: str
     USERS_TAG: str
 

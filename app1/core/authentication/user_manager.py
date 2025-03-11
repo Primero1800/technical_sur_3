@@ -20,7 +20,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
     verification_token_secret = settings.access_token.VERIFICATION_TOKEN_SECRET
 
     async def on_after_register(self, user: "User", request: Optional["Request"] = None):
-        log.warning("%s has registered.".format(user))
+        log.warning("%r has registered.".format(user))
 
     async def on_after_forgot_password(
         self, user: "User", token: str, request: Optional["Request"] = None
@@ -34,7 +34,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
     async def on_after_request_verify(
         self, user: "User", token: str, request: Optional["Request"] = None
     ):
-        log.warning(f"Verification requested for %r. Verification token: %r".format(user, token))
+        log.warning("Verification requested for %r. Verification token: %r".format(user, token))
 
     async def on_after_update(
             self, user: "User", update_dict: Dict[str, Any],
@@ -44,7 +44,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
 
     async def on_after_delete(
             self, user: "User", request: Optional["Request"] = None):
-        log.info(f"%r is successfully deleted".format(user))
+        log.info("%r is successfully deleted".format(user))
 
     async def on_after_login(
             self, user: "User",

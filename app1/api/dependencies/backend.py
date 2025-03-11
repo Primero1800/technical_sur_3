@@ -4,11 +4,10 @@ from fastapi_users.authentication import (
 )
 
 from app1.api.dependencies import strategy
-
+from app1.core.settings import settings
 
 bearer_transport = BearerTransport(
-    # TODO update url
-    tokenUrl="auth/jwt/login"
+    tokenUrl=settings.auth.TRANSPORT_TOKEN_URL
 )
 
 

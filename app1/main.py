@@ -51,7 +51,7 @@ AppConfigurer.config_validation_exception_handler(app)
 @app.get("/", tags=[settings.tags.ROOT_TAG,],)
 @app.get("", tags=[settings.tags.ROOT_TAG,], include_in_schema=False,)
 def top():
-    return f"top here test {settings.app.API_V1_PREFIX}"
+    return f"top here test {settings.auth.TRANSPORT_TOKEN_URL}"
 
 
 @app.get("/echo/{thing}/", tags=[settings.tags.TECH_TAG,],)

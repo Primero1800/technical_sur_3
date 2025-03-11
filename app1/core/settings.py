@@ -95,6 +95,9 @@ class DB(CustomSettings):
 #     refresh_token_type = os.getenv('REFRESH_TOKEN_TYPE')
 #     default_password = os.getenv('DEFAULT_PASSWORD')
 
+class Auth(CustomSettings):
+    TRANSPORT_TOKEN_URL: str = ''
+
 
 class RunConfig(BaseModel):
     app1: AppRunConfig = AppRunConfig()
@@ -108,6 +111,7 @@ class Settings(CustomSettings):
     db: DB = DB()
     access_token: AccessTokenSettings = AccessTokenSettings()
     # auth_jwt: AuthJWT = AuthJWT()
+    auth: Auth = Auth()
 
 
 settings = Settings()
@@ -124,5 +128,14 @@ def get_db_connection(db_name: str) -> str:
     )
 
 
+def get_transport_token_url() -> str:
+    return "{}{}{}/login".format(
+        settings.app.API_PREFIX,
+        settings.app.API_V1_PREFIX,
+        settings.tags.AUTH_PREFIX,
+    )
+
+
 settings.db.DB_URL = get_db_connection(settings.db.DB_NAME)
 settings.db.DB_TEST_URL = get_db_connection(settings.db.DB_NAME_TEST)
+settings.auth.TRANSPORT_TOKEN_URL = get_transport_token_url()

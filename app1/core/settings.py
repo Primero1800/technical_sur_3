@@ -41,6 +41,10 @@ class SwaggerSettings(BaseModel):
     pass
 
 
+class AccessTokenSettings(CustomSettings):
+    ACCESS_TOKEN_LIFETIME: int
+
+
 class Tags(CustomSettings):
     TECH_TAG: str
     ROOT_TAG: str
@@ -99,6 +103,7 @@ class Settings(CustomSettings):
     tags: Tags = Tags()
     run: RunConfig = RunConfig()
     db: DB = DB()
+    access_token: AccessTokenSettings = AccessTokenSettings()
     # auth_jwt: AuthJWT = AuthJWT()
 
 

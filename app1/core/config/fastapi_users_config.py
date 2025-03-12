@@ -1,10 +1,13 @@
 from typing import TYPE_CHECKING
+
+from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import (
     AuthenticationBackend,
     BearerTransport,
 )
 from fastapi import Depends
 from fastapi_users.authentication.strategy.db import AccessTokenDatabase, DatabaseStrategy
+from sqlalchemy import Integer
 
 from app1.core.config import DBConfigurer
 from app1.core.settings import settings
@@ -59,6 +62,14 @@ authentication_backend = AuthenticationBackend(
     name="access-token-db",
     transport=bearer_transport,
     get_strategy=get_database_strategy,
+)
+
+
+# FastAPI Users
+
+fastapi_users = FastAPIUsers["User", Integer](
+    get_user_manager,
+    [authentication_backend],
 )
 
 

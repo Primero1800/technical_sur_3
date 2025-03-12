@@ -19,10 +19,18 @@ class CustomSettings(BaseSettings):
 
 
 class AppRunConfig(CustomSettings):
-    app_path: str
-    app_host: str
-    app_port: int
-    app_reload: bool
+    APP_PATH: str
+    APP_HOST: str
+    APP_PORT: int
+    APP_RELOAD: bool
+
+
+class Superuser(CustomSettings):
+    SUPERUSER_EMAIL: str
+    SUPERUSER_PASSWORD: str
+    SUPERUSER_IS_ACTIVE: bool = True
+    SUPERUSER_IS_SUPERUSER: bool = True
+    SUPERUSER_IS_VERIFIED: bool = True
 
 
 class AppSettings(CustomSettings):
@@ -107,7 +115,7 @@ class Auth(CustomSettings):
         )
 
 
-class RunConfig(BaseModel):
+class RunConfig(CustomSettings):
     app1: AppRunConfig = AppRunConfig()
 
 
@@ -120,6 +128,7 @@ class Settings(CustomSettings):
     access_token: AccessTokenSettings = AccessTokenSettings()
     # auth_jwt: AuthJWT = AuthJWT()
     auth: Auth = Auth()
+    superuser: Superuser = Superuser()
 
 
 settings = Settings()

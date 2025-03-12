@@ -11,7 +11,7 @@ from app1.core.config import (
 from app1.core.auth.user_manager import UserManager
 from app1.core.settings import settings
 
-from app1.api.v1.schemas.user import UserCreate
+from app1.api.v1.users.schemas import UserCreate
 from fastapi_users.exceptions import UserAlreadyExists
 
 from app1.core.models import User

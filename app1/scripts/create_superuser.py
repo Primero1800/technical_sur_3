@@ -14,26 +14,8 @@ from fastapi_users.exceptions import UserAlreadyExists
 
 from app1.core.models import User
 
-
 logger = logging.getLogger(__name__)
 
-# async def create_user(email: str, password: str, is_superuser: bool = False):
-#     try:
-#         async with DBConfigurer.Session as session:
-#             async with get_user_db_context(session) as user_db:
-#                 async with get_user_manager_context(user_db) as user_manager:
-#                     user = await user_manager.create(
-#                         UserCreate(
-#                             email=email,
-#                             password=password,
-#                             is_superuser=is_superuser
-#                         )
-#                     )
-#                     print(f"User created {user}")
-#                     return user
-#     except UserAlreadyExists:
-#         print(f"User {email} already exists")
-#         raise
 
 async def create_user(
         user_manager: UserManager,
@@ -46,6 +28,7 @@ async def create_user(
     return user
 
 
+# PYTHONPATH=.. python scripts/create_superuser.py
 async def create_superuser(
         email: str = settings.superuser.SUPERUSER_EMAIL,
         password: str = settings.superuser.SUPERUSER_PASSWORD,

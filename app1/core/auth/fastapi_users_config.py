@@ -11,9 +11,8 @@ from sqlalchemy import Integer
 
 from app1.core.settings import settings
 
-from app1.api.v1.auth.dependencies.users import get_user_db
-from app1.api.v1.auth.dependencies.access_token import get_access_token_db
-from app1.api.v1.auth.dependencies.user_manager import get_user_manager
+from app1.core.auth.access_token import get_access_token_db
+from app1.core.auth.user_manager import get_user_manager
 
 if TYPE_CHECKING:
     from app1.core.models import AccessToken

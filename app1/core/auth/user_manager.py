@@ -7,7 +7,7 @@ from sqlalchemy import Integer
 from fastapi_users import BaseUserManager, IntegerIDMixin, schemas, models, InvalidPasswordException
 
 from app1.core.settings import settings
-from app1.api.v1.auth.dependencies.users import get_user_db
+from app1.core.auth.users import get_user_db
 
 
 if TYPE_CHECKING:

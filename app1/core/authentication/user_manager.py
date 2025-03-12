@@ -20,38 +20,38 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
     verification_token_secret = settings.access_token.VERIFICATION_TOKEN_SECRET
 
     async def on_after_register(self, user: "User", request: Optional["Request"] = None):
-        log.warning("%r has registered.".format(user))
+        log.warning("%r has registered." % (user, ))
 
     async def on_after_forgot_password(
         self, user: "User", token: str, request: Optional["Request"] = None
     ):
-        log.warning("%r has forgot their password. Reset token: %r".format(user, token))
+        log.warning("%r has forgot their password. Reset token: %r" % (user, token))
 
     async def on_after_reset_password(
             self, user: "User", request: Optional["Request"] = None):
-        log.warning("%r has reset their password.".format(user))
+        log.warning("%r has reset their password." % (user, ))
 
     async def on_after_request_verify(
         self, user: "User", token: str, request: Optional["Request"] = None
     ):
-        log.warning("Verification requested for %r. Verification token: %r".format(user, token))
+        log.warning("Verification requested for %r. Verification token: %r" % (user, token))
 
     async def on_after_update(
             self, user: "User", update_dict: Dict[str, Any],
             request: Optional["Request"] = None,
     ):
-        log.warning("%r has been updated with %r".format(user, update_dict))
+        log.warning("%r has been updated with %r" % (user, update_dict))
 
     async def on_after_delete(
             self, user: "User", request: Optional["Request"] = None):
-        log.info("%r is successfully deleted".format(user))
+        log.info("%r is successfully deleted" % (user, ))
 
     async def on_after_login(
             self, user: "User",
             request: Optional["Request"] = None,
             response: Optional["Response"] = None,
     ):
-        log.info("%r logged in.".format(user))
+        log.info("%r logged in." % (user,))
 
     async def validate_password(
         self, password: str, user: Union[schemas.UC, models.UP]

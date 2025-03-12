@@ -18,61 +18,56 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
-# Access token
+class FastAPIUsersConfigurer:
 
-async def get_access_token_db(
-    session: "AsyncSession" = Depends(DBConfigurer.session_getter)
-):
-    yield AccessToken.get_db(session=session)
+    # Access token
 
+    @staticmethod
+    async def get_access_token_db(
+        session: "AsyncSession" = Depends(DBConfigurer.session_getter)
+    ):
+        yield AccessToken.get_db(session=session)
 
-# Strategy
+    # Strategy
 
-def get_database_strategy(
-    access_token_db: AccessTokenDatabase["AccessToken"] = Depends(get_access_token_db),
-) -> DatabaseStrategy:
-    return DatabaseStrategy(
-        access_token_db,
-        lifetime_seconds=settings.access_token.ACCESS_TOKEN_LIFETIME,
+    @staticmethod
+    def get_database_strategy(
+        access_token_db: AccessTokenDatabase["AccessToken"] = Depends(get_access_token_db),
+    ) -> DatabaseStrategy:
+        return DatabaseStrategy(
+            access_token_db,
+            lifetime_seconds=settings.access_token.ACCESS_TOKEN_LIFETIME,
+        )
+
+    # Users
+
+    @staticmethod
+    async def get_user_db(
+            session: "AsyncSession" = Depends(DBConfigurer.session_getter)
+    ):
+        yield User.get_db(session=session)
+
+    # User_manager
+
+    @staticmethod
+    async def get_user_manager(user_db=Depends(get_user_db)):
+        yield UserManager(user_db)
+
+    # Backend
+
+    bearer_transport = BearerTransport(
+        tokenUrl=settings.auth.TRANSPORT_TOKEN_URL
     )
 
-
-# Users
-
-async def get_user_db(
-        session: "AsyncSession" = Depends(DBConfigurer.session_getter)
-):
-    yield User.get_db(session=session)
-
-
-# User_manager
-
-async def get_user_manager(user_db=Depends(get_user_db)):
-    yield UserManager(user_db)
-
-
-# Backend
-
-bearer_transport = BearerTransport(
-    tokenUrl=settings.auth.TRANSPORT_TOKEN_URL
-)
-
-
-authentication_backend = AuthenticationBackend(
-    name="access-token-db",
-    transport=bearer_transport,
-    get_strategy=get_database_strategy,
-)
-
+    authentication_backend = AuthenticationBackend(
+        name="access-token-db",
+        transport=bearer_transport,
+        get_strategy=get_database_strategy,
+    )
 
 # FastAPI Users
 
-fastapi_users = FastAPIUsers["User", Integer](
-    get_user_manager,
-    [authentication_backend],
-)
-
-
-
-
-
+    fastapi_users = FastAPIUsers["User", Integer](
+        get_user_manager,
+        [authentication_backend],
+    )

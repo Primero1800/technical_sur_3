@@ -6,8 +6,6 @@ from app1.core.config.fastapi_users_config import (
     fastapi_users, authentication_backend,
 )
 
-# from app1.core.config import FastAPIUsersConfigurer
-
 
 router = APIRouter()
 

@@ -5,15 +5,14 @@ from fastapi_users import FastAPIUsers
 from sqlalchemy import Integer
 
 from app1.api.v1.schemas.user import UserRead, UserCreate
-from app1.api.dependencies.backend import authentication_backend
-from app1.api.dependencies.user_manager import get_user_manager
+from app1.core.config import fastapi_users_config
 
 if TYPE_CHECKING:
-    from app1.core.models import User
+    pass
 
 fastapi_users = FastAPIUsers["User", Integer](
-    get_user_manager,
-    [authentication_backend],
+    fastapi_users_config.get_user_manager,
+    [fastapi_users_config.authentication_backend],
 )
 
 router = APIRouter()
@@ -21,7 +20,7 @@ router = APIRouter()
 # /login
 # /logout
 router.include_router(
-    fastapi_users.get_auth_router(authentication_backend)
+    fastapi_users.get_auth_router(fastapi_users_config.authentication_backend)
 )
 
 # /register

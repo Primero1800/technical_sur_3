@@ -2,9 +2,11 @@ import asyncio
 import contextlib
 import logging
 
+from app1.api.v1.auth.dependencies.user_manager import get_user_manager
+from app1.api.v1.auth.dependencies.users import get_user_db
+
 from app1.core.config import (
     DBConfigurer,
-    FastAPIUsersConfigurer,
 )
 from app1.core.authentication.user_manager import UserManager
 from app1.core.settings import settings
@@ -45,9 +47,9 @@ async def create_superuser(
         )
         try:
             async with DBConfigurer.Session() as session:
-                get_user_db_context = contextlib.asynccontextmanager(FastAPIUsersConfigurer.get_user_db)
+                get_user_db_context = contextlib.asynccontextmanager(get_user_db)
                 async with get_user_db_context(session) as user_db:
-                    get_user_manager_context = contextlib.asynccontextmanager(FastAPIUsersConfigurer.get_user_manager)
+                    get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
                     async with get_user_manager_context(user_db) as user_manager:
                         user = await create_user(
                             user_manager=user_manager,

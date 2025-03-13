@@ -2,13 +2,12 @@ import asyncio
 import contextlib
 import logging
 
-from app1.core.auth.user_manager import get_user_manager
-from app1.core.auth.users import get_user_db
-
 from app1.core.config import (
     DBConfigurer,
 )
-from app1.core.auth.user_manager import UserManager
+from app1.core.auth import (
+    UserManager, get_user_manager, get_user_db,
+)
 from app1.core.settings import settings
 
 from app1.api.v1.users.schemas import UserCreate

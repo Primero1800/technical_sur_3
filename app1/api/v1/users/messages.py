@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app1.api.v1.users.schemas import UserRead
 from app1.core.models import User
-from app1.core.auth.fastapi_users_config import (
+from app1.core.auth import (
     current_user, current_superuser,
 )
 

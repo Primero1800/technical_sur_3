@@ -17,7 +17,6 @@ class User(Base, IDIntPkMixin, SQLAlchemyBaseUserTable[int]):
     displayed_name: Mapped[str] = mapped_column(
         default='Incognito', server_default='Noname',
         nullable=False, type_=String(50),
-        name='Displayed user name',
     )
 
     @classmethod

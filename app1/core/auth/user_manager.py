@@ -32,7 +32,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
 
     async def on_after_reset_password(
             self, user: "User", request: Optional["Request"] = None):
-        log.warning("%r has reset their password." % (user, ))
+        log.warning("%r has reset his password." % (user, ))
 
     async def on_after_request_verify(
         self, user: "User", token: str, request: Optional["Request"] = None

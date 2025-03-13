@@ -48,3 +48,14 @@ fastapi_users = FastAPIUsers["User", Integer](
     get_user_manager,
     [authentication_backend],
 )
+
+current_user = fastapi_users.current_user(
+    active=True,
+    verified=True,
+)
+
+current_superuser = fastapi_users.current_user(
+    active=True,
+    verified=True,
+    superuser=True,
+)

@@ -64,6 +64,7 @@ class Tags(CustomSettings):
     JWT_AUTH_TAG: str
     USERS_TAG: str
     USERS_PREFIX: str
+    USERS_MESSAGES_PREFIX: str
 
 
 class DB(CustomSettings):

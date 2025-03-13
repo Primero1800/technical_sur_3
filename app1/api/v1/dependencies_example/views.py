@@ -1,8 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Header
 
 router = APIRouter()
 
 
-@router.get("")
-async def get_root():
-    pass
+@router.get("/single-direct-dependency")
+async def single_direct_dependency(
+        header_param: str = Header()
+):
+    return {
+        "header_param": header_param,
+    }

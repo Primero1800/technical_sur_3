@@ -1,8 +1,15 @@
-from fastapi import APIRouter
-from app1.api.v1.users.schemas import UserRead, UserUpdate
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app1.core.auth import fastapi_users
+from app1.api.v1.users import crud
+from app1.api.v1.users.schemas import UserRead, UserUpdate, UserCreate
 
+from app1.core.auth import (
+    fastapi_users,
+    current_superuser
+)
+from app1.core.models import User
+from app1.core.config import DBConfigurer
 
 router = APIRouter()
 
@@ -16,3 +23,13 @@ router.include_router(
         UserRead, UserUpdate
     ),
 )
+
+
+@router.get(
+    '/', response_model=list[UserRead]
+)
+async def get_users(
+        superuser: User = Depends(current_superuser),
+        session: AsyncSession = Depends(DBConfigurer.session_getter)
+) -> list[UserRead]:
+    return await crud.get_all_users(session=session)

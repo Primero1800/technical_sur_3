@@ -13,7 +13,8 @@ router = APIRouter()
 # /logout
 router.include_router(
     fastapi_users.get_auth_router(
-        authentication_backend
+        authentication_backend,
+        requires_verification=True,
     )
 )
 

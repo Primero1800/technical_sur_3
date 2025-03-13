@@ -37,29 +37,31 @@ async def create_superuser(
         is_active: bool = settings.superuser.SUPERUSER_IS_ACTIVE,
         is_verified: bool = settings.superuser.SUPERUSER_IS_VERIFIED,
         is_superuser: bool = settings.superuser.SUPERUSER_IS_SUPERUSER,
+        display_name: str = 'Superuser'
 ):
-        user_create = UserCreate(
-            email=email,
-            password=password,
-            is_active=is_active,
-            is_superuser=is_superuser,
-            is_verified=is_verified,
-        )
-        try:
-            async with DBConfigurer.Session() as session:
-                get_user_db_context = contextlib.asynccontextmanager(get_user_db)
-                async with get_user_db_context(session) as user_db:
-                    get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
-                    async with get_user_manager_context(user_db) as user_manager:
-                        user = await create_user(
-                            user_manager=user_manager,
-                            user_create=user_create
-                        )
-                        logger.warning(f"User created {user} from scrypt")
-        except UserAlreadyExists:
-            logger.error(f"User {email} already exists")
-            raise
-        return user
+    user_create = UserCreate(
+        email=email,
+        password=password,
+        is_active=is_active,
+        is_superuser=is_superuser,
+        is_verified=is_verified,
+        display_name=display_name,
+    )
+    try:
+        async with DBConfigurer.Session() as session:
+            get_user_db_context = contextlib.asynccontextmanager(get_user_db)
+            async with get_user_db_context(session) as user_db:
+                get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
+                async with get_user_manager_context(user_db) as user_manager:
+                    user = await create_user(
+                        user_manager=user_manager,
+                        user_create=user_create
+                    )
+                    logger.warning(f"User created {user} from scrypt")
+    except UserAlreadyExists:
+        logger.error(f"User {email} already exists")
+        raise
+    return user
 
 
 if __name__ == "__main__":

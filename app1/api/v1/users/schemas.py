@@ -1,13 +1,19 @@
 from fastapi_users import schemas
 
+from app1.api.v1.users.mixins import DisplayUserNameMixin
 
-class UserRead(schemas.BaseUser[int]):
+
+class UserBase(DisplayUserNameMixin, schemas.BaseUser[int]):
     pass
 
 
-class UserCreate(schemas.BaseUserCreate):
+class UserRead(UserBase):
     pass
 
 
-class UserUpdate(schemas.BaseUserUpdate):
+class UserCreate(UserBase):
+    pass
+
+
+class UserUpdate(UserBase):
     pass

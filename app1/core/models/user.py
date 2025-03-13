@@ -14,17 +14,21 @@ if TYPE_CHECKING:
 
 
 class User(Base, IDIntPkMixin, SQLAlchemyBaseUserTable[int]):
-    displayed_name: Mapped[str] = mapped_column(
+    display_name: Mapped[str] = mapped_column(
         default='Incognito', server_default='Noname',
         nullable=False, type_=String(50),
     )
 
     @classmethod
     def get_db(cls, session: "AsyncSession"):
-        return SQLAlchemyUserDatabase(session,  cls)
+        return SQLAlchemyUserDatabase(session, cls)
 
     def __str__(self):
-        return f"{self.__class__.__name__}(id={self.id}, email={self.email}, displayed_name={self.displayed_name})"
+        return (f"{self.__class__.__name__}("
+                f"id={self.id}, "
+                f"email={self.email}, "
+                f"display_name={self.display_name}"
+                f")")
 
     def __repr__(self):
         return str(self)

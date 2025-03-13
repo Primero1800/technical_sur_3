@@ -65,6 +65,8 @@ class Tags(CustomSettings):
     USERS_TAG: str
     USERS_PREFIX: str
     USERS_MESSAGES_PREFIX: str
+    DEPENDENCIES_TAG: str
+    DEPENDENCIES_PREFIX: str
 
 
 class DB(CustomSettings):

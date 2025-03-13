@@ -26,10 +26,11 @@ router.include_router(
 
 
 @router.get(
-    '/', response_model=list[UserRead]
+    '/',
+    response_model=list[UserRead],
+    dependencies=[Depends(current_superuser),],
 )
 async def get_users(
-        superuser: User = Depends(current_superuser),
         session: AsyncSession = Depends(DBConfigurer.session_getter)
 ) -> list[UserRead]:
     return await crud.get_all_users(session=session)

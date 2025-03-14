@@ -9,6 +9,4 @@ router = APIRouter()
 def webhook_user_registered_notification(info: UserRegisteredWebhookNotification):
     """
     This webhook will be triggered, when the user is created.
-    :param info: UserRegisteredWebhookNotification
-    :return:
     """

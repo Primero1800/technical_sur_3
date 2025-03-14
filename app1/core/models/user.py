@@ -19,10 +19,6 @@ class User(Base, IDIntPkMixin, SQLAlchemyBaseUserTable[int]):
         nullable=False, type_=String(50),
     )
 
-    @classmethod
-    def get_db(cls, session: "AsyncSession"):
-        return SQLAlchemyUserDatabase(session, cls)
-
     def __str__(self):
         return (f"{self.__class__.__name__}("
                 f"id={self.id}, "

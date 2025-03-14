@@ -21,9 +21,5 @@ class AccessToken(Base, SQLAlchemyBaseAccessTokenTable[int]):
         nullable=False,
     )
 
-    @classmethod
-    def get_db(cls, session: "AsyncSession"):
-        return SQLAlchemyAccessTokenDatabase(session, cls)
-
     def __str__(self):
         return f"{self.__class__.__name__}(user_id={self.user_id}, created_at={self.created_at!r})"

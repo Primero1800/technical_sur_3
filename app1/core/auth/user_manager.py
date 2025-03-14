@@ -9,6 +9,8 @@ from fastapi_users import BaseUserManager, IntegerIDMixin, schemas, models, Inva
 from app1.core.settings import settings
 from app1.core.auth.users import get_user_db
 
+from app1.core.auth.webhooks.users_webhooks import hook_send_new_user_notification
+
 
 if TYPE_CHECKING:
     from app1.core.models import User
@@ -28,6 +30,8 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
 
     async def on_after_register(self, user: "User", request: Optional["Request"] = None):
         log.warning("%r has registered." % (user, ))
+        # webhook
+        await hook_send_new_user_notification(user)
 
     async def on_after_forgot_password(
         self, user: "User", token: str, request: Optional["Request"] = None

@@ -1,3 +1,4 @@
+import logging
 from typing import Callable, Dict, Any
 
 from fastapi import FastAPI, HTTPException
@@ -13,7 +14,10 @@ from app1.core import errors
 
 
 class AppConfigurer:
-
+    logging.basicConfig(
+        level=settings.logging.log_level_value,
+        format=settings.logging.LOGGING_FORMAT,
+    )
 
     @staticmethod
     def create_app(docs_url, redoc_url, lifespan) -> FastAPI:

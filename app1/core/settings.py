@@ -1,6 +1,8 @@
+import logging
 import os
 import sys
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -35,6 +37,19 @@ class Superuser(CustomSettings):
 
 class Users(CustomSettings):
     USERS_PASSWORD_MIN_LENGTH: int
+
+
+class WebHooks(CustomSettings):
+    WEBHOOK_URL: str
+
+
+class LoggingConfig(CustomSettings):
+    LOGGING_LEVEL: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+    LOGGING_FORMAT: str
+
+    @property
+    def log_level_value(self) -> int:
+        return logging.getLevelNamesMapping()[self.LOGGING_LEVEL]
 
 
 class AppSettings(CustomSettings):
@@ -137,6 +152,8 @@ class Settings(CustomSettings):
     auth: Auth = Auth()
     superuser: Superuser = Superuser()
     users: Users = Users()
+    webhooks: WebHooks = WebHooks()
+    logging: LoggingConfig = LoggingConfig()
 
 
 settings = Settings()

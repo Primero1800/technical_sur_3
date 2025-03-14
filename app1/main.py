@@ -6,7 +6,10 @@ from app1.core.config import (
     AppConfigurer, SwaggerConfigurer, DBConfigurer
 )
 from app1.core.settings import settings
-from app1.api import router as router_api
+from app1.api import (
+    router as router_api,
+    webhooks_router,
+)
 
 
 # Initialization
@@ -34,7 +37,7 @@ app.include_router(
     router_api,
     prefix=settings.app.API_PREFIX,
 )
-
+app.webhooks = webhooks_router.routes
 
 SwaggerConfigurer.config_swagger(app, settings.app.APP_TITLE)
 

@@ -39,6 +39,7 @@ class AppConfigurer:
                 version=settings.app.APP_VERSION,
                 description=settings.app.APP_DESCRIPTION,
                 routes=subject.routes,
+                webhooks=subject.webhooks,
             )
             subject.openapi_schema = openapi_schema
             return subject.openapi_schema

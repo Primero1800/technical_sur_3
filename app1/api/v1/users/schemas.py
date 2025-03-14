@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi_users import schemas
-from pydantic import Field, EmailStr
+from pydantic import Field, EmailStr, BaseModel
 
 from app1.api.v1.users.mixins import DisplayUserNameMixin
 from app1.core.settings import settings
@@ -24,3 +24,8 @@ class UserCreateStraight(DisplayUserNameMixin):
     password: Annotated[str, Field(
         min_length=settings.users.USERS_PASSWORD_MIN_LENGTH
     )]
+
+
+class UserRegisteredWebhookNotification(BaseModel):
+    user: UserRead
+    time: str

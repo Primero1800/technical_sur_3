@@ -7,6 +7,8 @@ from app1.api.v1.users import router as users_router
 from app1.api.v1.users import messages_router
 from app1.api.v1.dependencies_example import router as deps_router
 
+from app1.api.v1.webhooks import router as webhooks_router
+
 http_bearer = HTTPBearer(
     auto_error=False
 )

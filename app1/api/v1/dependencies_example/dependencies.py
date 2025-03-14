@@ -121,7 +121,7 @@ class HeaderAccessDependency:
             id=1
         )
 
-    async def __call__(self, token: Annotated[str, Header()]) -> TokenIntrospectSchema:
+    async def __call__(self, token: Annotated[str, Header(alias='x-token')]) -> TokenIntrospectSchema:
         token_data = self.validate(token)
         logging.info("!!!!! token validated !!!!!!")
         return token_data

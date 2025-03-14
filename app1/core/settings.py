@@ -33,6 +33,10 @@ class Superuser(CustomSettings):
     SUPERUSER_IS_VERIFIED: bool = True
 
 
+class Users(CustomSettings):
+    USERS_PASSWORD_MIN_LENGTH: int
+
+
 class AppSettings(CustomSettings):
     APP_BASE_DIR: str = str(Path(__file__).resolve().parent.parent)
     APP_TITLE: str
@@ -132,6 +136,7 @@ class Settings(CustomSettings):
     # auth_jwt: AuthJWT = AuthJWT()
     auth: Auth = Auth()
     superuser: Superuser = Superuser()
+    users: Users = Users()
 
 
 settings = Settings()

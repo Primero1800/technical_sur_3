@@ -17,10 +17,14 @@ if TYPE_CHECKING:
 
 log = logging.getLogger(__name__)
 
+RESET_PASSWORD_TOKEN_SECRET = settings.access_token.RESET_PASSWORD_TOKEN_SECRET
+VERIFICATION_TOKEN_SECRET = settings.access_token.VERIFICATION_TOKEN_SECRET
+USERS_PASSWORD_MIN_LENGTH = settings.users.USERS_PASSWORD_MIN_LENGTH
+
 
 class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
-    reset_password_token_secret = settings.access_token.RESET_PASSWORD_TOKEN_SECRET
-    verification_token_secret = settings.access_token.VERIFICATION_TOKEN_SECRET
+    reset_password_token_secret = RESET_PASSWORD_TOKEN_SECRET
+    verification_token_secret = VERIFICATION_TOKEN_SECRET
 
     async def on_after_register(self, user: "User", request: Optional["Request"] = None):
         log.warning("%r has registered." % (user, ))
@@ -59,9 +63,9 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
     async def validate_password(
         self, password: str, user: Union[schemas.UC, models.UP]
     ) -> None:
-        if len(password) < 8:
+        if len(password) < USERS_PASSWORD_MIN_LENGTH:
             raise InvalidPasswordException(
-                reason="Password should be at least 8 characters"
+                reason=f"Password should be at least {USERS_PASSWORD_MIN_LENGTH} characters"
             )
         if user.email in password:
             raise InvalidPasswordException(

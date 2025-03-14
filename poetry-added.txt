@@ -15,6 +15,7 @@ add
     fastapi-users[sqlalchemy]
 
     httpie
+    aiohttp
 
 
 

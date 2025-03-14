@@ -27,4 +27,4 @@ async def hook_send_new_user_notification(user: "User") -> None:
                 json=webhook_data
         ) as response:
             response_data = await response.json(content_type="application/json")
-            log.info("Sent webhook, got response %s", type(response_data), response_data)
+            log.info("Sent webhook, got response %s", response_data)

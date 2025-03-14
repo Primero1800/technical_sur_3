@@ -1,11 +1,12 @@
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Header, Depends, Response, Request
+from fastapi import APIRouter, Header, Depends, Response, Request, Form
 from starlette.responses import JSONResponse
 
 from .dependencies import (
     get_header_with_alias,
     get_header_with_alias_parameterized,
+    Depender, path_reader, PathReaderDependency, header_access_dependency, TokenIntrospectSchema,
 )
 
 
@@ -41,3 +42,38 @@ async def single_direct_dependency(
         content=dict(response.headers),
         headers=response.headers
     )
+
+
+@router.get("/depender-1")
+async def depender_dependency(depender: Depender = Depends(Depender)) -> dict[str, str]:
+    print(depender)
+    return depender.as_dict()
+
+
+@router.get(
+    '/path-reader',
+)
+async def path_reader(
+        pr: PathReaderDependency = Depends(path_reader.as_dependency),
+) -> dict:
+
+    return pr.read(top="OK")
+
+
+@router.get(
+    '/path-reader-2',
+)
+async def path_reader(
+        pr: PathReaderDependency = Depends(PathReaderDependency("/direct/").as_dependency),
+) -> dict:
+
+    return pr.read(top="OKey")
+
+
+@router.get(
+    '/header-access',
+)
+async def header_access(
+        pr: TokenIntrospectSchema = Depends(header_access_dependency),
+) -> dict:
+    return pr.model_dump()

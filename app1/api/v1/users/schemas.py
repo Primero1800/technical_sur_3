@@ -1,6 +1,10 @@
+from typing import Annotated
+
 from fastapi_users import schemas
+from pydantic import Field, EmailStr
 
 from app1.api.v1.users.mixins import DisplayUserNameMixin
+from app1.core.settings import settings
 
 
 class UserRead(DisplayUserNameMixin, schemas.BaseUser[int]):
@@ -13,3 +17,10 @@ class UserCreate(DisplayUserNameMixin, schemas.BaseUserCreate):
 
 class UserUpdate(DisplayUserNameMixin, schemas.BaseUserUpdate):
     pass
+
+
+class UserCreateStraight(DisplayUserNameMixin):
+    email: EmailStr
+    password: Annotated[str, Field(
+        min_length=settings.users.USERS_PASSWORD_MIN_LENGTH
+    )]

@@ -2,6 +2,8 @@ import uvicorn
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from starlette import status
+
 from app1.core.config import (
     AppConfigurer, SwaggerConfigurer, DBConfigurer
 )
@@ -10,6 +12,9 @@ from app1.api import (
     router as router_api,
     webhooks_router,
 )
+
+from app1.scripts.scrypt_schemas.email import MailBody
+from fastapi import BackgroundTasks
 
 
 # Initialization
@@ -69,6 +74,20 @@ async def get_routes_endpoint():
     return await SwaggerConfigurer.get_routes(
         application=app,
     )
+
+
+@app.post("/test-mailer/", tags=[settings.tags.TECH_TAG,],)
+@app.post("/test-mailer",  tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
+async def test_mailer(
+        req: MailBody, tasks: BackgroundTasks
+):
+    from app1.scripts.mail_sender import send_mail
+    data = req.model_dump()
+    tasks.add_task(send_mail, data)
+    return {
+        "status": status.HTTP_200_OK,
+        "detail": "Message has been successfully scheduled"
+    }
 
 
 if __name__ == "__main__":

@@ -2,13 +2,14 @@ from ssl import create_default_context
 from email.mime.text import MIMEText
 from smtplib import SMTP
 
+from fastapi import HTTPException
 from starlette import status
 
 from app1.core.settings import settings
 from app1.scripts.scrypt_schemas.email import MailBody
 
 
-def send_mail(data: dict | None = None):
+async def send_mail(data: dict | None = None):
     msg = MailBody(**data)
     message = MIMEText(msg.body, "html")
     message["From"] = settings.email.MAIL_USERNAME
@@ -25,12 +26,18 @@ def send_mail(data: dict | None = None):
             server.login(user=settings.email.MAIL_USERNAME, password=settings.email.MAIL_PASSWORD)
             server.send_message(message)
             server.quit()
+        print('SMTP SERVER OK')
         return {
             "status": status.HTTP_200_OK,
             "detail":  "Message was sent successfully"
         }
     except Exception as exc:
+        print(f'SMTP SERVER EXCEPTION: {exc}')
         return {
             "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
             "detail": exc
         }
+        # raise HTTPException(
+        #     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        #     detail=f"{exc}"
+        # )

@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 
 from fastapi_users.exceptions import UserAlreadyExists
 
-from app1.core.auth import get_user_db, get_user_manager
+from app1.core.auth.users import get_user_db
+from app1.core.auth.user_manager import get_user_manager
 from app1.core.config import DBConfigurer
 
 

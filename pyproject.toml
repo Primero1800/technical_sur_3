@@ -16,6 +16,7 @@ gunicorn = "^23.0.0"
 fastapi-users = {extras = ["sqlalchemy"], version = "^14.0.1"}
 httpie = "^3.2.4"
 aiohttp = "^3.11.13"
+fastapi-mail = "^1.4.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"

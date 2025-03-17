@@ -88,6 +88,13 @@ class Tags(CustomSettings):
     DEPENDENCIES_PREFIX: str
 
 
+class Email(CustomSettings):
+    MAIL_HOST: str
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_PORT: int
+
+
 class DB(CustomSettings):
 
     DB_NAME: str = os.getenv('DB_NAME_TEST') if 'pytest' in sys.modules else os.getenv('DB_NAME')
@@ -154,6 +161,7 @@ class Settings(CustomSettings):
     users: Users = Users()
     webhooks: WebHooks = WebHooks()
     logging: LoggingConfig = LoggingConfig()
+    email: Email = Email()
 
 
 settings = Settings()

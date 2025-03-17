@@ -13,7 +13,7 @@ from app1.api import (
     webhooks_router,
 )
 
-from app1.scripts.scrypt_schemas.email import MailBody
+from app1.scripts.scrypt_schemas.email import CustomMessageSchema
 from fastapi import BackgroundTasks
 
 
@@ -79,11 +79,11 @@ async def get_routes_endpoint():
 @app.post("/test-mailer/", tags=[settings.tags.TECH_TAG,],)
 @app.post("/test-mailer",  tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
 async def test_mailer(
-        req: MailBody, tasks: BackgroundTasks
+        req: CustomMessageSchema, tasks: BackgroundTasks
 ):
     from app1.scripts.mail_sender import send_mail
-    data = req.model_dump()
-    tasks.add_task(send_mail, data)
+
+    await send_mail(schema=req, background_tasks=tasks)
     return {
         "status": status.HTTP_200_OK,
         "detail": "Message has been successfully scheduled"

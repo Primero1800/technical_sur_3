@@ -1,43 +1,54 @@
-from ssl import create_default_context
-from email.mime.text import MIMEText
-from smtplib import SMTP
+from logging import Logger, getLogger
 
-from fastapi import HTTPException
-from starlette import status
+from fastapi import BackgroundTasks
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 
 from app1.core.settings import settings
-from app1.scripts.scrypt_schemas.email import MailBody
+from app1.scripts.scrypt_schemas.email import CustomMessageSchema
+
+logger = getLogger(__name__)
+
+def get_smtp_connection_config():
+    return ConnectionConfig(
+        MAIL_USERNAME=settings.email.MAIL_USERNAME,
+        MAIL_PASSWORD=settings.email.MAIL_PASSWORD,
+        MAIL_FROM=settings.email.MAIL_FROM,
+        MAIL_PORT=settings.email.MAIL_PORT,
+        MAIL_SERVER=settings.email.MAIL_HOST,
+        MAIL_STARTTLS=True,
+        MAIL_SSL_TLS=False,
+        USE_CREDENTIALS=True,
+    )
 
 
-async def send_mail(data: dict | None = None):
-    msg = MailBody(**data)
-    message = MIMEText(msg.body, "html")
-    message["From"] = settings.email.MAIL_USERNAME
-    message["To"] = ', '.join(msg.to)
-    message["Subject"] = msg.subject
+def get_message_params(schema: CustomMessageSchema):
+    return MessageSchema(**schema.model_dump(), subtype='html')
 
-    ctx = create_default_context()
 
-    try:
-        with SMTP(host=settings.email.MAIL_HOST, port=settings.email.MAIL_PORT) as server:
-            server.ehlo()
-            server.starttls(context=ctx)
-            server.ehlo()
-            server.login(user=settings.email.MAIL_USERNAME, password=settings.email.MAIL_PASSWORD)
-            server.send_message(message)
-            server.quit()
-        print('SMTP SERVER OK')
-        return {
-            "status": status.HTTP_200_OK,
-            "detail":  "Message was sent successfully"
-        }
-    except Exception as exc:
-        print(f'SMTP SERVER EXCEPTION: {exc}')
-        return {
-            "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-            "detail": exc
-        }
-        # raise HTTPException(
-        #     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        #     detail=f"{exc}"
-        # )
+async def send_mail(
+        schema: CustomMessageSchema,
+        background_tasks: BackgroundTasks = None,
+        logger: Logger = logger
+) -> bool:
+
+    message = get_message_params(schema)
+    fm = FastMail(get_smtp_connection_config())
+
+    if background_tasks:
+        try:
+            background_tasks.add_task(fm.send_message, message, )
+            logger.info("Starting mailsender as background task")
+            return True
+        except Exception as exc:
+            logger.error(f"Mailsender as background task error: {exc}")
+            return False
+    else:
+        try:
+            await fm.send_message(message=message)
+            logger.info("Starting mailsender as async task")
+            return True
+        except Exception as exc:
+            logger.error(f"Mailsender as async task error: {exc}")
+            return False
+
+    # ClientConnectorDNSError

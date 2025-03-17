@@ -93,6 +93,7 @@ class Email(CustomSettings):
     MAIL_USERNAME: str
     MAIL_PASSWORD: str
     MAIL_PORT: int
+    MAIL_FROM: str
 
 
 class DB(CustomSettings):

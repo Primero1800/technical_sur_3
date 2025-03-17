@@ -10,7 +10,8 @@ from app1.core.settings import settings
 from app1.core.auth.users import get_user_db
 
 from app1.core.auth.webhooks.users_webhooks import hook_send_new_user_notification
-
+from app1.scripts.mail_sender import send_mail
+from app1.scripts.scrypt_schemas.email import CustomMessageSchema
 
 if TYPE_CHECKING:
     from app1.core.models import User
@@ -28,10 +29,25 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
     reset_password_token_secret = RESET_PASSWORD_TOKEN_SECRET
     verification_token_secret = VERIFICATION_TOKEN_SECRET
 
-    async def on_after_register(self, user: "User", request: Optional["Request"] = None):
+    async def on_after_register(
+            self,
+            user: "User",
+            request: Optional["Request"] = None
+    ):
+
         log.warning("%r has registered." % (user, ))
+
         # webhook
-        await hook_send_new_user_notification(user)
+        # await hook_send_new_user_notification(user)
+
+        # mailsender
+        schema = CustomMessageSchema(
+            recipients=[user.email,],
+            subject=settings.app.APP_TITLE + '. Registration',
+            body=f"You have been registered on {settings.app.APP_TITLE}"
+        )
+        await send_mail(schema=schema)
+
 
     async def on_after_forgot_password(
         self, user: "User", token: str, request: Optional["Request"] = None

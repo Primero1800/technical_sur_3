@@ -1,3 +1,6 @@
+import logging
+import aiohttp
+
 from fastapi import APIRouter, Request, Body, Depends, HTTPException
 from fastapi_users import BaseUserManager, exceptions, models
 from pydantic import EmailStr
@@ -9,9 +12,12 @@ from app1.core.auth.fastapi_users_config import (
     fastapi_users, authentication_backend,
 )
 from app1.core.auth.user_manager import get_user_manager
+from app1.core.settings import settings
 
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
 
 # /login
 # /logout
@@ -73,3 +79,32 @@ router.include_router(
 router.include_router(
     fastapi_users.get_reset_password_router(),
 )
+
+
+@router.get(
+    "/verify-hook",
+    name="verify:verify-token-hook",
+    response_model=UserRead
+)
+async def hook_verify(
+    token: str,
+) -> UserRead:
+
+    logger.warning("In verify-hook: got token from outer link: token=%s", token)
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+                url=f"{settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.VERIFY_TOKEN_URL}",
+                json={
+                    "token": token
+                }
+        ) as response:
+            response_data = await response.json(content_type="application/json")
+            logger.info("Sent webhook, got response %s", response_data)
+    if response.status != 200:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=response_data['detail'] if "detail" in response_data else "Bad request. Verification error."
+        )
+
+    return response_data
+

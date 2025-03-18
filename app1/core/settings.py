@@ -26,6 +26,15 @@ class AppRunConfig(CustomSettings):
     APP_PORT: int
     APP_RELOAD: bool
 
+    APP_HOST_SERVER_TO_PLACE: str = ''
+    APP_HOST_PROTOCOL_TO_PLACE: str = 'http'
+
+    @property
+    def APP_HOST_SERVER_URL(self):
+        if self.APP_HOST_SERVER_TO_PLACE:
+            return f"{self.APP_HOST_PROTOCOL_TO_PLACE}://{self.APP_HOST_SERVER_TO_PLACE}"
+        return f"{self.APP_HOST_PROTOCOL_TO_PLACE}://{self.APP_HOST}:{self.APP_PORT}"
+
 
 class Superuser(CustomSettings):
     SUPERUSER_EMAIL: str
@@ -140,6 +149,22 @@ class Auth(CustomSettings):
     @property
     def TRANSPORT_TOKEN_URL(self) -> str:
         return "{}{}{}/login".format(
+            settings.app.API_PREFIX,
+            settings.app.API_V1_PREFIX,
+            settings.tags.AUTH_PREFIX,
+        )
+
+    @property
+    def VERIFY_TOKEN_URL(self) -> str:
+        return "{}{}{}/verify".format(
+            settings.app.API_PREFIX,
+            settings.app.API_V1_PREFIX,
+            settings.tags.AUTH_PREFIX,
+        )
+
+    @property
+    def VERIFY_HOOK_TOKEN_URL(self) -> str:
+        return "{}{}{}/verify-hook".format(
             settings.app.API_PREFIX,
             settings.app.API_V1_PREFIX,
             settings.tags.AUTH_PREFIX,

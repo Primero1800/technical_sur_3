@@ -68,7 +68,8 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
             subject=settings.app.APP_TITLE + '. Registration',
             body=f"You have been registered on {settings.app.APP_TITLE}. "
                  f"To finish registration, please, use this token in "
-                 f"{settings.access_token.VERIFICATION_TOKEN_LIFETIME_SECONDS // 60} min: {token}"
+                 f"{settings.access_token.VERIFICATION_TOKEN_LIFETIME_SECONDS // 60} min: {token}   /n or just follow"
+                 f" the link: {settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.VERIFY_HOOK_TOKEN_URL}/?token={token}"
         )
         await send_mail(schema=schema)
 

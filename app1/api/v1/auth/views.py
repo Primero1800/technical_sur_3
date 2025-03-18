@@ -10,6 +10,7 @@ from app1.core.auth.fastapi_users_config import (
 )
 from app1.core.auth.user_manager import get_user_manager
 
+
 router = APIRouter()
 
 # /login
@@ -29,6 +30,7 @@ router.include_router(
 
 # /request-verify-token
 # /verify
+
 @router.post(
         "/request-verify-token",
         status_code=status.HTTP_202_ACCEPTED,

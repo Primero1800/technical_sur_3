@@ -48,7 +48,6 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
         )
         await send_mail(schema=schema)
 
-
     async def on_after_forgot_password(
         self, user: "User", token: str, request: Optional["Request"] = None
     ):

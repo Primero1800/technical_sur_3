@@ -55,6 +55,7 @@ class WebHooks(CustomSettings):
 class LoggingConfig(CustomSettings):
     LOGGING_LEVEL: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
     LOGGING_FORMAT: str
+    LOGGER: logging.Logger = logging.getLogger(__name__)
 
     @property
     def log_level_value(self) -> int:
@@ -150,6 +151,14 @@ class Auth(CustomSettings):
     @property
     def TRANSPORT_TOKEN_URL(self) -> str:
         return "{}{}{}/login".format(
+            settings.app.API_PREFIX,
+            settings.app.API_V1_PREFIX,
+            settings.tags.AUTH_PREFIX,
+        )
+
+    @property
+    def REQUEST_VERIFY_TOKEN_URL(self) -> str:
+        return "{}{}{}/request-verify-token".format(
             settings.app.API_PREFIX,
             settings.app.API_V1_PREFIX,
             settings.tags.AUTH_PREFIX,

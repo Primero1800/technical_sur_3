@@ -15,6 +15,7 @@ from app1.core.auth.fastapi_users_config import (
 from app1.core.auth.user_manager import get_user_manager
 from app1.core.settings import settings
 
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -92,6 +93,7 @@ async def hook_verify(
 ) -> UserRead:
 
     logger.warning("In verify-hook: got token from outer link: token=%s", token)
+
     async with aiohttp.ClientSession() as session:
         async with session.post(
                 url=f"{settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.VERIFY_TOKEN_URL}",
@@ -120,6 +122,7 @@ async def reset_password_hook(
     password: str = Body(...),
 ):
     logger.warning("In reset-password-hook: got token from outer link: token=%s", token)
+
     async with aiohttp.ClientSession() as session:
         async with session.post(
                 url=f"{settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.RESET_PASSWORD_TOKEN_URL}",

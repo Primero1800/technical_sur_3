@@ -72,6 +72,7 @@ class AccessTokenSettings(CustomSettings):
     ACCESS_TOKEN_LIFETIME: int
     RESET_PASSWORD_TOKEN_SECRET: str
     VERIFICATION_TOKEN_SECRET: str
+    VERIFICATION_TOKEN_LIFETIME_SECONDS: int
 
 
 class Tags(CustomSettings):

@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 RESET_PASSWORD_TOKEN_SECRET = settings.access_token.RESET_PASSWORD_TOKEN_SECRET
 VERIFICATION_TOKEN_SECRET = settings.access_token.VERIFICATION_TOKEN_SECRET
 USERS_PASSWORD_MIN_LENGTH = settings.users.USERS_PASSWORD_MIN_LENGTH
+VERIFICATION_TOKEN_LIFETIME_SECONDS = settings.access_token.VERIFICATION_TOKEN_LIFETIME_SECONDS
 
 
 class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
@@ -61,6 +62,15 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
         self, user: "User", token: str, request: Optional["Request"] = None
     ):
         log.warning("Verification requested for %r. Verification token: %r" % (user, token))
+
+        schema = CustomMessageSchema(
+            recipients=[user.email, ],
+            subject=settings.app.APP_TITLE + '. Registration',
+            body=f"You have been registered on {settings.app.APP_TITLE}. "
+                 f"To finish registration, please, use this token in "
+                 f"{settings.access_token.VERIFICATION_TOKEN_LIFETIME_SECONDS // 60} min: {token}"
+        )
+        await send_mail(schema=schema)
 
     async def on_after_update(
             self, user: "User", update_dict: Dict[str, Any],

@@ -31,6 +31,7 @@ async def delete_expired_tokens_from_db(
 
         stmt = delete(AccessToken).where(AccessToken.created_at < expired_frontier)
         await session.execute(stmt)
+        await session.commit()
         logger.info(f"Expired tokens to deleted")
 
         return result_to_return

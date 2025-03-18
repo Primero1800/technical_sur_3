@@ -24,6 +24,7 @@ RESET_PASSWORD_TOKEN_SECRET = settings.access_token.RESET_PASSWORD_TOKEN_SECRET
 VERIFICATION_TOKEN_SECRET = settings.access_token.VERIFICATION_TOKEN_SECRET
 USERS_PASSWORD_MIN_LENGTH = settings.users.USERS_PASSWORD_MIN_LENGTH
 VERIFICATION_TOKEN_LIFETIME_SECONDS = settings.access_token.VERIFICATION_TOKEN_LIFETIME_SECONDS
+RESET_PASSWORD_TOKEN_LIFETIME_SECONDS = settings.access_token.RESET_PASSWORD_TOKEN_LIFETIME_SECONDS
 
 
 class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
@@ -53,6 +54,15 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
         self, user: "User", token: str, request: Optional["Request"] = None
     ):
         log.warning("%r has forgot their password. Reset token: %r" % (user, token))
+        schema = CustomMessageSchema(
+            recipients=[user.email, ],
+            subject=settings.app.APP_TITLE + '. Password changing.',
+            body=f"You have been requested on {settings.app.APP_TITLE} "
+                 f"for password restoring, please, use this token in "
+                 f"{RESET_PASSWORD_TOKEN_LIFETIME_SECONDS // 60} min: {token}   /n or just follow"
+                 f" the link: {settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.RESET_PASSWORD_HOOK_TOKEN_URL}/?token={token}"
+        )
+        await send_mail(schema=schema)
 
     async def on_after_reset_password(
             self, user: "User", request: Optional["Request"] = None):
@@ -68,7 +78,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
             subject=settings.app.APP_TITLE + '. Registration',
             body=f"You have been registered on {settings.app.APP_TITLE}. "
                  f"To finish registration, please, use this token in "
-                 f"{settings.access_token.VERIFICATION_TOKEN_LIFETIME_SECONDS // 60} min: {token}   /n or just follow"
+                 f"{VERIFICATION_TOKEN_LIFETIME_SECONDS // 60} min: {token}   /n or just follow"
                  f" the link: {settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.VERIFY_HOOK_TOKEN_URL}/?token={token}"
         )
         await send_mail(schema=schema)

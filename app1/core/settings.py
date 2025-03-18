@@ -82,6 +82,7 @@ class AccessTokenSettings(CustomSettings):
     RESET_PASSWORD_TOKEN_SECRET: str
     VERIFICATION_TOKEN_SECRET: str
     VERIFICATION_TOKEN_LIFETIME_SECONDS: int
+    RESET_PASSWORD_TOKEN_LIFETIME_SECONDS: int
 
 
 class Tags(CustomSettings):
@@ -165,6 +166,22 @@ class Auth(CustomSettings):
     @property
     def VERIFY_HOOK_TOKEN_URL(self) -> str:
         return "{}{}{}/verify-hook".format(
+            settings.app.API_PREFIX,
+            settings.app.API_V1_PREFIX,
+            settings.tags.AUTH_PREFIX,
+        )
+
+    @property
+    def RESET_PASSWORD_TOKEN_URL(self) -> str:
+        return "{}{}{}/reset-password".format(
+            settings.app.API_PREFIX,
+            settings.app.API_V1_PREFIX,
+            settings.tags.AUTH_PREFIX,
+        )
+
+    @property
+    def RESET_PASSWORD_HOOK_TOKEN_URL(self) -> str:
+        return "{}{}{}/reset-password-hook".format(
             settings.app.API_PREFIX,
             settings.app.API_V1_PREFIX,
             settings.tags.AUTH_PREFIX,

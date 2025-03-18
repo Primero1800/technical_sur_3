@@ -3,6 +3,7 @@ import aiohttp
 
 from fastapi import APIRouter, Request, Body, Depends, HTTPException
 from fastapi_users import BaseUserManager, exceptions, models
+from fastapi_users.router.reset import RESET_PASSWORD_RESPONSES
 from pydantic import EmailStr
 from starlette import status
 
@@ -107,4 +108,33 @@ async def hook_verify(
         )
 
     return response_data
+
+
+@router.post(
+    "/reset-password-hook",
+    name="verify:reset-password-hook",
+    responses=RESET_PASSWORD_RESPONSES,
+)
+async def reset_password_hook(
+    token: str,
+    password: str = Body(...),
+):
+    logger.warning("In reset-password-hook: got token from outer link: token=%s", token)
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+                url=f"{settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.RESET_PASSWORD_TOKEN_URL}",
+                json={
+                    "token": token,
+                    "password": password
+                }
+        ) as response:
+            response_data = await response.json(content_type="application/json")
+            logger.info("Sent webhook, got response %s", response_data)
+    if response.status != 200:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=response_data['detail'] if "detail" in response_data else "Bad request. Verification error."
+        )
+
+    return None
 

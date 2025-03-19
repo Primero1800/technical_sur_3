@@ -19,6 +19,7 @@ add
     fastapi-mail
 
     prometheus-fastapi-instrumentator
+    prometheus-async
 
 
 

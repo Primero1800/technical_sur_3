@@ -18,6 +18,7 @@ httpie = "^3.2.4"
 aiohttp = "^3.11.13"
 fastapi-mail = "^1.4.2"
 prometheus-fastapi-instrumentator = "^7.0.2"
+prometheus-async = "^25.1.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"

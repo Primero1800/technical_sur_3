@@ -18,6 +18,8 @@ add
     aiohttp
     fastapi-mail
 
+    prometheus-fastapi-instrumentator
+
 
 
 add --group dev

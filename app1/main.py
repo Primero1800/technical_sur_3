@@ -1,8 +1,9 @@
 import uvicorn
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from starlette import status
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from app1.core.config import (
     AppConfigurer, SwaggerConfigurer, DBConfigurer
@@ -14,7 +15,7 @@ from app1.api import (
 )
 
 from app1.scripts.scrypt_schemas.email import CustomMessageSchema
-from fastapi import BackgroundTasks
+
 
 
 # Initialization
@@ -45,6 +46,11 @@ app.include_router(
 app.webhooks = webhooks_router.routes
 
 SwaggerConfigurer.config_swagger(app, settings.app.APP_TITLE)
+
+# /metrics
+Instrumentator().instrument(app).expose(
+    app=app, endpoint="/metrics", tags=[settings.tags.TECH_TAG,],
+)
 
 ######################################################################
 

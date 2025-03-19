@@ -1,24 +1,11 @@
 from logging import Logger, getLogger
-
 from fastapi import BackgroundTasks
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from fastapi_mail import FastMail, MessageSchema
 
-from app1.core.settings import settings
 from app1.scripts.scrypt_schemas.email import CustomMessageSchema
 
-logger = getLogger(__name__)
 
-def get_smtp_connection_config():
-    return ConnectionConfig(
-        MAIL_USERNAME=settings.email.MAIL_USERNAME,
-        MAIL_PASSWORD=settings.email.MAIL_PASSWORD,
-        MAIL_FROM=settings.email.MAIL_FROM,
-        MAIL_PORT=settings.email.MAIL_PORT,
-        MAIL_SERVER=settings.email.MAIL_HOST,
-        MAIL_STARTTLS=True,
-        MAIL_SSL_TLS=False,
-        USE_CREDENTIALS=True,
-    )
+logger = getLogger(__name__)
 
 
 def get_message_params(schema: CustomMessageSchema):
@@ -30,6 +17,8 @@ async def send_mail(
         background_tasks: BackgroundTasks = None,
         logger: Logger = logger
 ) -> bool:
+
+    from .connection_config import get_smtp_connection_config
 
     message = get_message_params(schema)
     fm = FastMail(get_smtp_connection_config())

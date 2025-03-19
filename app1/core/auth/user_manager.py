@@ -12,7 +12,7 @@ from app1.core.settings import settings
 from app1.core.auth.users import get_user_db
 
 from app1.core.auth.webhooks.users_webhooks import hook_send_new_user_notification
-from app1.scripts.mail_sender import send_mail
+
 from app1.scripts.after_registration import hook_after_registration
 from app1.scripts.scrypt_schemas.email import CustomMessageSchema
 
@@ -119,6 +119,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
                  f"{RESET_PASSWORD_TOKEN_LIFETIME_SECONDS // 60} min: {token}   /n or just follow"
                  f" the link: {settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.RESET_PASSWORD_HOOK_TOKEN_URL}/?token={token}"
         )
+        from app1.scripts.mail_sender.utils import send_mail
         await send_mail(schema=schema)
 
     async def on_after_reset_password(
@@ -138,6 +139,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
                  f"{VERIFICATION_TOKEN_LIFETIME_SECONDS // 60} min: {token}   /n or just follow"
                  f" the link: {settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.VERIFY_HOOK_TOKEN_URL}/?token={token}"
         )
+        from app1.scripts.mail_sender.utils import send_mail
         await send_mail(schema=schema)
 
     async def on_after_update(

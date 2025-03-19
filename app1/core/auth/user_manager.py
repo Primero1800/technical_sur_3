@@ -11,9 +11,6 @@ from fastapi_users import (
 from app1.core.settings import settings
 from app1.core.auth.users import get_user_db
 
-from app1.core.auth.webhooks.users_webhooks import hook_send_new_user_notification
-
-from app1.scripts.after_registration import hook_after_registration
 from app1.scripts.scrypt_schemas.email import CustomMessageSchema
 
 if TYPE_CHECKING:
@@ -86,8 +83,10 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
 
         # webhooks
 
+        # from app1.core.auth.webhooks.users_webhooks import hook_send_new_user_notification
         # await hook_send_new_user_notification(user)
 
+        from app1.scripts.after_registration import hook_after_registration
         await hook_after_registration(
             user_manager=self,
             request=request,
@@ -106,7 +105,6 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
         #     background_tasks=background_tasks
         # )
 
-
     async def on_after_forgot_password(
         self, user: "User", token: str, request: Optional["Request"] = None
     ):
@@ -119,8 +117,12 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
                  f"{RESET_PASSWORD_TOKEN_LIFETIME_SECONDS // 60} min: {token}   /n or just follow"
                  f" the link: {settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.RESET_PASSWORD_HOOK_TOKEN_URL}/?token={token}"
         )
-        from app1.scripts.mail_sender.utils import send_mail
-        await send_mail(schema=schema)
+
+        # from app1.scripts.mail_sender.utils import send_mail
+        # await send_mail(schema=schema)
+
+        from app1.celery_tasks.tasks import task_send_mail
+        task_send_mail.apply_async(args=(schema.model_dump(),))
 
     async def on_after_reset_password(
             self, user: "User", request: Optional["Request"] = None):
@@ -139,8 +141,12 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
                  f"{VERIFICATION_TOKEN_LIFETIME_SECONDS // 60} min: {token}   /n or just follow"
                  f" the link: {settings.run.app1.APP_HOST_SERVER_URL}{settings.auth.VERIFY_HOOK_TOKEN_URL}/?token={token}"
         )
-        from app1.scripts.mail_sender.utils import send_mail
-        await send_mail(schema=schema)
+
+        # from app1.scripts.mail_sender.utils import send_mail
+        # await send_mail(schema=schema)
+
+        from app1.celery_tasks.tasks import task_send_mail
+        task_send_mail.apply_async(args=(schema.model_dump(), ))
 
     async def on_after_update(
             self, user: "User", update_dict: Dict[str, Any],

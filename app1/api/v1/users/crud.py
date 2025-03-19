@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app1 import scripts as scripts
+from app1.scripts.create_user import create_user_straight as scripts_create_user_straight
 from app1.core.models import User
 from app1.api.v1.users.schemas import UserCreate
 
@@ -22,6 +22,6 @@ async def get_all_users(
 async def create_user_throw_form(
         instance: "UserCreateStraight",
 ):
-    return await scripts.create_user_straight(
+    return await scripts_create_user_straight(
         instance=UserCreate(**instance.model_dump()),
     )

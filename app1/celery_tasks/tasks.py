@@ -1,3 +1,4 @@
+import asyncio
 import time
 from typing import TYPE_CHECKING
 
@@ -8,11 +9,19 @@ if TYPE_CHECKING:
 
 
 @app_celery.task(name="task_send_mail")
-async def task_send_mail(
-        schema: "CustomMessageSchema",
+def task_send_mail(
+        schema: dict,
 ) -> bool:
+    from app1.scripts.scrypt_schemas.email import CustomMessageSchema
+    schema = CustomMessageSchema(**schema)
+    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     from app1.scripts.mail_sender.utils import send_mail
-    return await send_mail(schema=schema)
+    loop = asyncio.get_event_loop()
+    if loop.is_running():
+        result = asyncio.run(send_mail(schema))
+    else:
+        result = loop.run_until_complete(send_mail(schema))
+    return result
 
 
 @app_celery.task(name="task_test_celery")

@@ -16,16 +16,17 @@ async def hook_after_registration(
     request: "Request",
     user: "User",
     user_manager: BaseUserManager[models.UP, models.ID],
-    logger: Logger = logger
+    logger: Logger = logger,
 ):
-
     logger.warning("In after-registration-hook: user=%s", user)
-    from app1.api.v1.auth.views import request_verify_token
-    await request_verify_token(
-        request=request,
-        email=user.email,
-        user_manager=user_manager,
-    )
+
+    if not user.is_verified:
+        from app1.api.v1.auth.views import request_verify_token
+        await request_verify_token(
+            request=request,
+            email=user.email,
+            user_manager=user_manager,
+        )
 
     # async with aiohttp.ClientSession() as session:
     #     async with session.post(

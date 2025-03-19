@@ -15,7 +15,7 @@ from app1.api import (
 )
 
 from app1.scripts.scrypt_schemas.email import CustomMessageSchema
-
+from prometheus.config import add_metrics_root
 
 
 # Initialization
@@ -47,9 +47,11 @@ app.webhooks = webhooks_router.routes
 
 SwaggerConfigurer.config_swagger(app, settings.app.APP_TITLE)
 
+
 # /metrics
-Instrumentator().instrument(app).expose(
-    app=app, endpoint="/metrics", tags=[settings.tags.TECH_TAG,],
+add_metrics_root(
+    app=app,
+    tags=[settings.tags.TECH_TAG,],
 )
 
 ######################################################################

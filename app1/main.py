@@ -97,6 +97,12 @@ async def test_mailer(
         "detail": "Message has been successfully scheduled"
     }
 
+@app.get("/celery/", tags=[settings.tags.TECH_TAG,],)
+@app.get("/celery", tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
+async def test_celery():
+    from app1.celery_tasks.tasks import test_celery
+    test_celery.apply_async()
+
 
 if __name__ == "__main__":
     # gunicorn app1.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000

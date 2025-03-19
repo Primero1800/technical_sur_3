@@ -1,3 +1,4 @@
+from functools import wraps
 from typing import Callable, Any
 
 from prometheus_async.aio import count_exceptions, time

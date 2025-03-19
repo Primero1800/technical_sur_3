@@ -21,6 +21,10 @@ add
     prometheus-fastapi-instrumentator
     prometheus-async
 
+    celery
+    redis
+    flower
+
 
 
 add --group dev

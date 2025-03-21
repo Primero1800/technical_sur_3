@@ -78,7 +78,6 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
             request: Optional["Request"] = None,
             background_tasks: Optional["BackgroundTasks"] = None,
     ):
-
         log.warning("%r has registered." % (user, ))
 
         # webhooks

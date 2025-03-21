@@ -140,4 +140,3 @@ async def reset_password_hook(
         )
 
     return None
-

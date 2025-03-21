@@ -10,6 +10,11 @@ from fastapi import FastAPI, BackgroundTasks
 from starlette import status
 from starlette.responses import JSONResponse
 
+from app1.celery_tasks.schemas import (
+    TaskRead,
+    from_raw_result_to_model,
+    async_result_to_dict,
+)
 from app1.core.config import (
     AppConfigurer, SwaggerConfigurer, DBConfigurer
 )
@@ -113,53 +118,41 @@ async def test_celery():
 
 @app.get("/celery/{task_id}/", tags=[settings.tags.TECH_TAG,],)
 @app.get("/celery/{task_id}", tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
-def get_status(task_id):
+async def get_status(task_id) -> TaskRead | dict:
+
     task_result: AsyncResult = AsyncResult(task_id, backend=app_celery.backend)
-    # task_name = task_result.get('task_name') if task_result else None
-    # print('TASK_NAME ', task_name)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result.__dict__)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result.name)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result.worker)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result.result)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result.date_done)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result.task_id)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result.retries)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result.info)
-    print('TTTTTTTTTTTTTTTTTTTTTT ', task_result)
-    result = {
-        "task_id": task_id,
-        'id': task_result.id,
-        "task_status": task_result.status,
-        "result": task_result.result,
-        "args": task_result.args,
-        "kwargs": task_result.kwargs,
-        "retries": task_result.retries,
-    }
-    return JSONResponse(result)
+    # print('STTTTTTTTTTTTTTART ', task_result.result)
+    # model: TaskRead = await from_raw_result_to_model(task_result.__dict__)
+    model: TaskRead = await from_raw_result_to_model(async_result_to_dict(task_result))
+    return model
 
 
 @app.get("/celery/", tags=[settings.tags.TECH_TAG,],)
 @app.get("/celery", tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
-def get_statuses():
+async def get_statuses() -> list[TaskRead]:
 
-    # keys = app_celery.backend.client.keys()
-    keys = redis.StrictRedis(app_celery.conf.result_backend)
+    keys = app_celery.backend.client.keys('celery-task-meta-*')
+
     print('KEYS ', keys)
 
-    results = []
+    result = []
     for key in keys:
-        value = app_celery.backend.client.get(key)
-        print(111111111111111111, key, value, type(value))
-        task = json.loads(value)
-        print(222222222222222222, key, task, type(task))
-        if 'result' in task and isinstance(task['result'], dict):
-            print(task['result'])
-            if task['result']['app_name'] == '3_sur_app1':
-                results.append(task['result'])
-        else:
-            print("doesnt match ", task)
+        print()
+        print(json.loads(app_celery.backend.client.get(key)))
+                    # {
+                    # 'status': 'SUCCESS',
+                    #  'result': {
+                    #           'meta': {'app_name': '3_sur_app1', 'task_name': 'task_test_celery'}, 'return': [12, True]
+                    #           },
+                    #  'traceback': None, 'children': [],
+                    #  'date_done': '2025-03-21T14:08:54.084711+00:00',
+                    #  'task_id': '468f313a-ab06-4df5-953c-03806ddcc001'
+                    #  }
+        print()
+        model: TaskRead = await from_raw_result_to_model(json.loads(app_celery.backend.client.get(key)))
+        result.append(model)
 
-    return JSONResponse(content=results, status_code=200)
+    return result
 
 
 if __name__ == "__main__":

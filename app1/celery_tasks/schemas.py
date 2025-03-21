@@ -20,8 +20,6 @@ class TaskRead(BaseModel):
 
 
 async def from_raw_result_to_model(raw: dict) -> TaskRead:
-    print('IIIINSIDEEEEEEEEEEE ', raw, type(raw))
-
     m_dict: dict[str, Any] = {
         'id': raw['task_id'],
         'task_status': raw['status'],
@@ -38,21 +36,15 @@ async def from_raw_result_to_model(raw: dict) -> TaskRead:
         if 'meta' in cache_result:
             if 'app_name' in cache_result['meta']:
                 m_app_name = cache_result['meta']['app_name']
-                print(2)
             if 'task_name' in cache_result['meta']:
                 m_task_name = cache_result['meta']['task_name']
-                print(3)
         if 'returned_value' in raw['result']:
             m_returned_value = raw['result']['returned_value']
-            print(4)
         if 'args' in raw['result']:
             m_args = raw['result']['args']
-            print(5)
         if 'kwargs' in raw['result']:
             m_kwargs = raw['result']['kwargs']
-            print(6)
 
-    print(7)
     return TaskRead(
         app_name=m_app_name,
         task_name=m_task_name,
@@ -67,7 +59,7 @@ def async_result_to_dict(async_result):
     result_dict = {
         'task_id': async_result.id,
         'status': async_result.status,
-        'result': async_result.result,  # This will be None until the task is completed
+        'result': async_result.result,
         'date_done': async_result.date_done,
         'traceback': async_result.traceback,
         'children': [async_result_to_dict(child) for child in async_result.children]

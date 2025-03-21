@@ -119,10 +119,7 @@ async def test_celery():
 @app.get("/celery/{task_id}/", tags=[settings.tags.TECH_TAG,],)
 @app.get("/celery/{task_id}", tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
 async def get_status(task_id) -> TaskRead | dict:
-
     task_result: AsyncResult = AsyncResult(task_id, backend=app_celery.backend)
-    # print('STTTTTTTTTTTTTTART ', task_result.result)
-    # model: TaskRead = await from_raw_result_to_model(task_result.__dict__)
     model: TaskRead = await from_raw_result_to_model(async_result_to_dict(task_result))
     return model
 
@@ -132,26 +129,10 @@ async def get_status(task_id) -> TaskRead | dict:
 async def get_statuses() -> list[TaskRead]:
 
     keys = app_celery.backend.client.keys('celery-task-meta-*')
-
-    print('KEYS ', keys)
-
     result = []
     for key in keys:
-        print()
-        print(json.loads(app_celery.backend.client.get(key)))
-                    # {
-                    # 'status': 'SUCCESS',
-                    #  'result': {
-                    #           'meta': {'app_name': '3_sur_app1', 'task_name': 'task_test_celery'}, 'return': [12, True]
-                    #           },
-                    #  'traceback': None, 'children': [],
-                    #  'date_done': '2025-03-21T14:08:54.084711+00:00',
-                    #  'task_id': '468f313a-ab06-4df5-953c-03806ddcc001'
-                    #  }
-        print()
         model: TaskRead = await from_raw_result_to_model(json.loads(app_celery.backend.client.get(key)))
         result.append(model)
-
     return result
 
 

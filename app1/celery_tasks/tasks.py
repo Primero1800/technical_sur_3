@@ -12,27 +12,36 @@ if TYPE_CHECKING:
 def task_send_mail(
         self,
         schema: dict,
-) -> bool:
+) -> dict:
+    meta = {
+        'app_name': '3_sur_app1',
+        'task_name': self.name,
+        'args': tuple(),
+        'kwargs': schema,
+    }
     self.update_state(meta={'task_name': self.name})
     from app1.scripts.scrypt_schemas.email import CustomMessageSchema
     schema = CustomMessageSchema(**schema)
-    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     from app1.scripts.mail_sender.utils import send_mail
     loop = asyncio.get_event_loop()
     if loop.is_running():
         result = asyncio.run(send_mail(schema))
     else:
         result = loop.run_until_complete(send_mail(schema))
-    return result
+    return {
+        "meta": meta,
+        "returned_value": result
+    }
 
 
 @app_celery.task(bind=True, name="task_test_celery")
 def test_celery(self) -> dict:
     meta = {
         'app_name': '3_sur_app1',
-        'task_name': self.name
+        'task_name': self.name,
+        'args': tuple(),
+        'kwargs': dict(),
     }
-    self.update_state(meta=meta)
     for i in range(10):
         print(10 - i)
         time.sleep(1)
@@ -40,5 +49,5 @@ def test_celery(self) -> dict:
     result = [12, True]
     return {
         "meta": meta,
-        "result": result
+        "returned_value": result
     }

@@ -87,6 +87,8 @@ class Tags(CustomSettings):
     USERS_MESSAGES_PREFIX: str
     DEPENDENCIES_TAG: str
     DEPENDENCIES_PREFIX: str
+    CELERY_TAG: str
+    CELERY_PREFIX: str
 
 
 class Email(CustomSettings):

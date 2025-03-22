@@ -15,6 +15,7 @@ app_celery.autodiscover_tasks(
 
 app_celery.conf.broker_url = settings.celery.CELERY_BROKER_URL
 app_celery.conf.result_backend = settings.celery.CELERY_BROKER_BACKEND
+app_celery.conf.timezone = settings.celery.APP_TIMEZONE
 
 # app_celery.conf.result_expires = timedelta(days=settings.celery.CELERY_RESULT_EXPIRES_DAYS)
 app_celery.conf.result_expires = timedelta(hours=settings.celery.CELERY_RESULT_EXPIRES_HOURS)

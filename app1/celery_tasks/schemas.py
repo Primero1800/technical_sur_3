@@ -38,12 +38,12 @@ async def from_raw_result_to_model(raw: dict) -> TaskRead:
                 m_app_name = cache_result['meta']['app_name']
             if 'task_name' in cache_result['meta']:
                 m_task_name = cache_result['meta']['task_name']
+            if 'args' in cache_result['meta']:
+                m_args = cache_result['meta']['args']
+            if 'kwargs' in cache_result['meta']:
+                m_kwargs = cache_result['meta']['kwargs']
         if 'returned_value' in raw['result']:
             m_returned_value = raw['result']['returned_value']
-        if 'args' in raw['result']:
-            m_args = raw['result']['args']
-        if 'kwargs' in raw['result']:
-            m_kwargs = raw['result']['kwargs']
 
     return TaskRead(
         app_name=m_app_name,

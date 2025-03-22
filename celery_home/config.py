@@ -11,7 +11,7 @@ from celery_home.settings import settings
 app_celery = Celery(__name__)
 
 app_celery.autodiscover_tasks(
-    packages=["app1.celery_tasks",]
+    packages=["app1.api.v1.celery_tasks",]
 )
 
 app_flower = Flower()

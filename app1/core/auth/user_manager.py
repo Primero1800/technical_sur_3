@@ -120,7 +120,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
         # from app1.scripts.mail_sender.utils import send_mail
         # await send_mail(schema=schema)
 
-        from app1.celery_tasks.tasks import task_send_mail
+        from app1.api.v1.celery_tasks.tasks import task_send_mail
         task_send_mail.apply_async(args=(schema.model_dump(),))
 
     async def on_after_reset_password(
@@ -144,7 +144,7 @@ class UserManager(IntegerIDMixin, BaseUserManager["User", Integer]):
         # from app1.scripts.mail_sender.utils import send_mail
         # await send_mail(schema=schema)
 
-        from app1.celery_tasks.tasks import task_send_mail
+        from app1.api.v1.celery_tasks.tasks import task_send_mail
         task_send_mail.apply_async(args=(schema.model_dump(), ))
 
     async def on_after_update(

@@ -25,6 +25,8 @@ add
     redis
     flower
 
+    fastapi_filter
+
 
 
 add --group dev

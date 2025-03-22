@@ -2,7 +2,6 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from fastapi_filter.contrib.sqlalchemy import Filter
 from pydantic import Field, BaseModel
 
 
@@ -39,12 +38,37 @@ class TaskFilter(BaseModel):
     #     model = Product
 
     class Config:
-        allow_population_by_field_name = True           # разрешить заполнять поля по их именам
+        populate_by_name = True           # разрешить заполнять поля по их именам
 
     @staticmethod
     def operation(operation_id):
         if operation_id in _operations:
             return _operations[operation_id]
         return None
+
+    @staticmethod
+    def get_dicts_to_filter(filter_dict: dict):
+        op_dict, val_dict = {}, {}
+        for key, value in filter_dict.items():
+            key_splitted = key.split('__')
+            field = key_splitted[0]
+            condition = key_splitted[-1]
+            operation = TaskFilter.operation(condition)
+            if operation:
+                op_dict[field] = operation
+                val_dict[field] = value
+        return op_dict, val_dict
+
+    @staticmethod
+    def is_matches(model_dict: dict, op_dict: dict, val_dict: dict):
+        for key, func in op_dict.items():
+            if key in model_dict:
+                if key == "date_done":
+                    print('DATE_DONE_FOUND ', model_dict[key])
+                    from app1.scripts.time_converter import convert_naive_time_to_aware
+                    val_dict[key] = convert_naive_time_to_aware(val_dict[key])
+                if (not model_dict[key] and key != 'returned_value') or not func(model_dict[key], val_dict[key]):
+                    return False
+        return True
 
 

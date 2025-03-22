@@ -34,4 +34,4 @@ async def get_statuses() -> list[TaskRead]:
     for key in keys:
         model: TaskRead = await from_raw_result_to_model(json.loads(app_celery.backend.client.get(key)))
         result.append(model)
-    return result
+    return sorted(result, key=lambda x: x.date_done, reverse=True)

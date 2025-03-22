@@ -1,9 +1,11 @@
 from fastapi import (
     APIRouter, Depends, Form, Request,
 )
+from fastapi_filter import FilterDepends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app1.api.v1.users import crud
+from app1.api.v1.users.filters import UserFilter
 from app1.api.v1.users.schemas import (
     UserRead, UserUpdate, UserCreateStraight,
 )
@@ -34,9 +36,10 @@ router.include_router(
     dependencies=[Depends(current_superuser),],
 )
 async def get_users(
-        session: AsyncSession = Depends(DBConfigurer.session_getter)
+        session: AsyncSession = Depends(DBConfigurer.session_getter),
+        user_filter: UserFilter = FilterDepends(UserFilter)
 ) -> list[UserRead]:
-    return await crud.get_all_users(session=session)
+    return await crud.get_all_users(session=session, filter_model=user_filter)
 
 
 @router.post(

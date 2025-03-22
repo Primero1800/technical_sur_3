@@ -9,12 +9,15 @@ from app1.api.v1.users.schemas import UserCreate
 
 if TYPE_CHECKING:
     from app1.api.v1.users.schemas import UserCreateStraight
+    from app1.api.v1.users.filters import UserFilter
 
 
 async def get_all_users(
         session: AsyncSession,
+        filter_model: "UserFilter",
 ):
-    stmt = select(User).order_by(User.id)
+    query_filter = filter_model.filter(select(User))
+    stmt = query_filter.order_by(User.id)
     result: Result = await session.execute(stmt)
     return result.scalars().all()
 

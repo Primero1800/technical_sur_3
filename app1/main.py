@@ -1,3 +1,4 @@
+import pytz
 import uvicorn
 
 from contextlib import asynccontextmanager
@@ -35,6 +36,12 @@ app = AppConfigurer.create_app(
 )
 
 app.openapi = AppConfigurer.get_custom_openapi(app)
+
+
+# Timezone
+
+moscow_tz = pytz.timezone(settings.app.APP_TIMEZONE)
+
 
 # ROUTERS
 

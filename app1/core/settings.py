@@ -56,6 +56,7 @@ class AppSettings(CustomSettings):
     APP_TITLE: str
     APP_VERSION: str
     APP_DESCRIPTION: str
+    APP_TIMEZONE: str
 
     API_PREFIX: str
     API_V1_PREFIX: str

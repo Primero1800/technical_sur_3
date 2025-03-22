@@ -23,6 +23,7 @@ celery = "^5.4.0"
 redis = "^5.2.1"
 flower = "^2.0.1"
 fastapi-filter = "^2.0.1"
+pytz = "^2025.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"

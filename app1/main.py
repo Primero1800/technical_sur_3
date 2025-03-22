@@ -1,20 +1,9 @@
-import json
-
 import uvicorn
-import redis
 
 from contextlib import asynccontextmanager
-
-from celery.result import AsyncResult
 from fastapi import FastAPI, BackgroundTasks
 from starlette import status
-from starlette.responses import JSONResponse
 
-from app1.celery_tasks.schemas import (
-    TaskRead,
-    from_raw_result_to_model,
-    async_result_to_dict,
-)
 from app1.core.config import (
     AppConfigurer, SwaggerConfigurer, DBConfigurer
 )
@@ -107,33 +96,6 @@ async def test_mailer(
         "status": status.HTTP_200_OK,
         "detail": "Message has been successfully scheduled"
     }
-
-
-@app.get("/celery-test/", tags=[settings.tags.TECH_TAG,],)
-@app.get("/celery-test", tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
-async def test_celery():
-    from app1.celery_tasks.tasks import test_celery
-    test_celery.apply_async()
-
-
-@app.get("/celery/{task_id}/", tags=[settings.tags.TECH_TAG,],)
-@app.get("/celery/{task_id}", tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
-async def get_status(task_id) -> TaskRead | dict:
-    task_result: AsyncResult = AsyncResult(task_id, backend=app_celery.backend)
-    model: TaskRead = await from_raw_result_to_model(async_result_to_dict(task_result))
-    return model
-
-
-@app.get("/celery/", tags=[settings.tags.TECH_TAG,],)
-@app.get("/celery", tags=[settings.tags.TECH_TAG,], include_in_schema=False,)
-async def get_statuses() -> list[TaskRead]:
-
-    keys = app_celery.backend.client.keys('celery-task-meta-*')
-    result = []
-    for key in keys:
-        model: TaskRead = await from_raw_result_to_model(json.loads(app_celery.backend.client.get(key)))
-        result.append(model)
-    return result
 
 
 if __name__ == "__main__":

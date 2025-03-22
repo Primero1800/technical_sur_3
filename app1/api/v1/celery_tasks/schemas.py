@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Any, Tuple
+from typing import Optional, Any
 
 from pydantic import BaseModel
 
@@ -20,10 +20,12 @@ class TaskRead(BaseModel):
 
 
 async def from_raw_result_to_model(raw: dict) -> TaskRead:
+    from app1.scripts.time_converter import convert_time
+    local_time_str = convert_time(raw['date_done'])
     m_dict: dict[str, Any] = {
         'id': raw['task_id'],
         'task_status': raw['status'],
-        'date_done': raw['date_done']
+        'date_done': local_time_str,
     }
     m_app_name: str | None = None
     m_task_name: str | None = None

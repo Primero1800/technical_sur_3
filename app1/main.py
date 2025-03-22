@@ -14,7 +14,6 @@ from app1.api import (
 )
 
 from app1.scripts.scrypt_schemas.email import CustomMessageSchema
-from celery_home.config import app_celery
 from prometheus.config import add_metrics_root
 
 

@@ -7,7 +7,7 @@ from celery_home.settings import settings
 
 
 # command
-#  celery -A celery_home.config.app_celery worker --loglevel=info | celery -A celery_home.config.app_celery flower
+#  celery -A celery_home.config.app_celery worker --loglevel=info | celery -A celery_home.config.app_celery flower | celery -A celery_home.config.app_celery beat  --loglevel=info
 app_celery = Celery(__name__)
 
 app_celery.autodiscover_tasks(

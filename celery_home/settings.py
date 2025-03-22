@@ -6,6 +6,7 @@ class Celery(CustomSettings):
     CELERY_RESULT: str
     CELERY_BROKER_HOST: str
     CELERY_RESULT_EXPIRES_DAYS: int
+    CELERY_RESULT_EXPIRES_HOURS: int
 
     @property
     def CELERY_BROKER_URL(self):

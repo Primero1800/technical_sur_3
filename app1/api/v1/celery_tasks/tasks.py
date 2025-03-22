@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import random
 import time
 from typing import TYPE_CHECKING
 
@@ -60,6 +61,20 @@ def test_celery(self) -> dict:
         time.sleep(1)
 
     result = [12, True]
+    return {
+        "meta": meta,
+        "returned_value": result
+    }
+
+
+@app_celery.task(bind=True, name="task_beat_test_every_minute")
+def beat_test_every_minute(self, number: int = 0) -> dict:
+    meta = {
+        'app_name': '3_sur_app1',
+        'task_name': self.name,
+        'args': (number,),
+    }
+    result = random.randint(20, 30) + number
     return {
         "meta": meta,
         "returned_value": result

@@ -1,9 +1,12 @@
 import json
+from typing import Optional
+
 from celery.result import AsyncResult
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from celery_home.config import app_celery
 from .filters import TaskFilter
+from . import crud
 from .schemas import (
     from_raw_result_to_model,
     async_result_to_dict,
@@ -28,23 +31,26 @@ async def get_status(task_id) -> TaskRead | dict:
 
 
 @router.get("/tasks", )
-async def get_statuses(task_filter: TaskFilter = Depends(TaskFilter)) -> list[TaskRead]:
+async def get_statuses(
+    page: int = Query(1, gt=0),
+    size: int = Query(10, gt=0),
+    sort_by: Optional[str] = None,
+    task_filter: TaskFilter = Depends(TaskFilter),
+) -> list[TaskRead]:
 
-    keys = app_celery.backend.client.keys('celery-task-meta-*')
+    result_full = await crud.get_all_tasks(
+        task_filter=task_filter,
+        backend_client=app_celery.backend.client
+    )
 
-    result = []
-    filter_dict = task_filter.model_dump(exclude_none=True, exclude_unset=True)
-    op_dict, val_dict = TaskFilter.get_dicts_to_filter(filter_dict)
+    from app1.scripts.pagination import paginate_result
+    return await paginate_result(
+        query_list=result_full,
+        page=page,
+        size=size,
+        sort_by=sort_by,
+    )
 
-    for task_key in keys:
-        model: TaskRead = await from_raw_result_to_model(json.loads(app_celery.backend.client.get(task_key)))
-        model_dict = model.model_dump()
 
-        if TaskFilter.is_matches(
-            model_dict=model_dict,
-            op_dict=op_dict,
-            val_dict=val_dict,
-        ):
-            result.append(model)
 
-    return sorted(result, key=lambda x: x.date_done, reverse=True)
+

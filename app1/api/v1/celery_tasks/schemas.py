@@ -18,6 +18,9 @@ class TaskRead(BaseModel):
     def result(self):
         return self.returned_value
 
+    def get(self, item, default):
+        return self.model_dump().get(item, default)
+
 
 async def from_raw_result_to_model(raw: dict) -> TaskRead:
     from app1.scripts.time_converter import convert_time

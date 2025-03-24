@@ -1,4 +1,9 @@
-from typing import Optional, Any, Sequence
+from typing import Optional, Any, Sequence, Iterable
+
+
+def sort_key(x: dict, sort_by: str):
+    x = str(x.get(sort_by, 0))
+    return x
 
 
 async def paginate_result(
@@ -9,7 +14,7 @@ async def paginate_result(
 ) -> Sequence | list[Any]:
 
     if sort_by:
-        query_list = sorted(query_list, key=lambda x: x.get(sort_by, 0))
+        query_list = sorted(query_list, key=lambda x: sort_key(x, sort_by))
 
     start_index = (page - 1) * size
     end_index = start_index + size

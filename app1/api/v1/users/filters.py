@@ -7,10 +7,10 @@ from app1.core.models import User
 
 
 class UserFilter(Filter):
-    email__like: Optional[str] = Field(default=None)
-    is_active: Optional[bool] = Field(default=None)
-    is_verified: Optional[bool] = Field(default=None)
-    is_superuser: Optional[bool] = Field(default=None)
+    email__like: Optional[str] = Field(default=None, description="Filter by email contains", )
+    is_active: Optional[bool] = Field(default=None, description="Filter whether user is active")
+    is_verified: Optional[bool] = Field(default=None, description="Filter whether user is verified")
+    is_superuser: Optional[bool] = Field(default=None, description="Filter whether user is superuser")
 
     class Constants(Filter.Constants):
         model = User

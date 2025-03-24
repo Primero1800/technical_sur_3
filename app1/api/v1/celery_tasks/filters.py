@@ -48,26 +48,28 @@ class TaskFilter(BaseModel):
 
     @staticmethod
     def get_dicts_to_filter(filter_dict: dict):
-        op_dict, val_dict = {}, {}
+        op_dict = {}
         for key, value in filter_dict.items():
             key_splitted = key.split('__')
             field = key_splitted[0]
             condition = key_splitted[-1]
             operation = TaskFilter.operation(condition)
             if operation:
-                op_dict[field] = operation
-                val_dict[field] = value
-        return op_dict, val_dict
+                op_dict[field] = {
+                    "operation": operation,
+                    "value": value
+                }
+        return op_dict
 
     @staticmethod
-    def is_matches(model_dict: dict, op_dict: dict, val_dict: dict):
+    def is_matches(model_dict: dict, op_dict: dict):
         for key, func in op_dict.items():
             if key in model_dict:
                 if key == "date_done":
                     print('DATE_DONE_FOUND ', model_dict[key])
                     from app1.scripts.time_converter import convert_naive_time_to_aware
-                    val_dict[key] = convert_naive_time_to_aware(val_dict[key])
-                if (not model_dict[key] and key != 'returned_value') or not func(model_dict[key], val_dict[key]):
+                    func['value'] = convert_naive_time_to_aware(func['value'])
+                if (not model_dict[key] and key != 'returned_value') or not func['operation'](model_dict[key], func['value']):
                     return False
         return True
 

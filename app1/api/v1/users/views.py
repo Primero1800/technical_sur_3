@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import (
     APIRouter, Depends, Form, Request, Query,
 )
@@ -36,12 +38,24 @@ router.include_router(
     dependencies=[Depends(current_superuser),],
 )
 async def get_users(
-        session: AsyncSession = Depends(DBConfigurer.session_getter),
+        page: int = Query(1, gt=0),
+        size: int = Query(10, gt=0),
+        sort_by: Optional[str] = None,
         user_filter: UserFilter = FilterDepends(UserFilter),
+        session: AsyncSession = Depends(DBConfigurer.session_getter),
 ) -> list[UserRead]:
-    return await crud.get_all_users(
+
+    result_full = await crud.get_all_users(
         session=session,
         filter_model=user_filter,
+    )
+
+    from app1.scripts.pagination import paginate_result
+    return await paginate_result(
+        query_list=result_full,
+        page=page,
+        size=size,
+        sort_by=sort_by,
     )
 
 
@@ -52,7 +66,6 @@ async def get_users(
 async def create_user_throw_form(
         user: UserCreateStraight = Form(),
 ) -> UserRead:
-    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ', UserCreateStraight.model_fields)
     return await crud.create_user_throw_form(
         instance=user,
     )

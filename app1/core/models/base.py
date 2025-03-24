@@ -21,3 +21,6 @@ class Base(DeclarativeBase):
         for column in self.__table__.columns:
             result[column.name] = getattr(self, column.name)
         return result
+
+    def get(self, item, default):
+        return self.to_dict().get(item, default)

@@ -1,7 +1,8 @@
 from tools.classes import CustomSettings
 
 
-class Celery(CustomSettings):
+class CeleryCustom(CustomSettings):
+    APP_NAME: str
     CELERY_BROKER: str
     CELERY_RESULT: str
     CELERY_BROKER_HOST: str
@@ -19,7 +20,7 @@ class Celery(CustomSettings):
 
 
 class Settings(CustomSettings):
-    celery: Celery = Celery()
+    celery: CeleryCustom = CeleryCustom()
 
 
 settings = Settings()

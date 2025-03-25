@@ -6,11 +6,11 @@ schedule = {
     #     'schedule': Crontabs.every_minute,
     #     'args': (100, )
     # },
-    'run-every-2-minutes': {
-        'task': 'task_beat_test_every_minute',
-        'schedule': Crontabs.every_2_minutes,
-        'args': (200,)
-    },
+    # 'run-every-2-minutes': {
+    #     'task': 'task_beat_test_every_minute',
+    #     'schedule': Crontabs.every_2_minutes,
+    #     'args': (200,)
+    # },
     'run-every-hour': {
         'task': 'task_beat_test_every_minute',
         'schedule': Crontabs.every_hour,

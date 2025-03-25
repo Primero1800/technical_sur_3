@@ -28,6 +28,8 @@ add
     fastapi_filter
     pytz
 
+    python-slugify[unicode]
+
 
 
 add --group dev

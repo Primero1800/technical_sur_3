@@ -7,6 +7,7 @@ from app1.api.v1.users import router as users_router
 from app1.api.v1.users import messages_router
 from app1.api.v1.dependencies_example import router as deps_router
 from app1.api.v1.celery_tasks import router as celery_router
+from app1.api.v1.store import router as store_router
 
 from app1.api.v1.webhooks import router as webhooks_router
 
@@ -46,4 +47,8 @@ router.include_router(
     celery_router,
     prefix=settings.tags.CELERY_PREFIX,
     tags=[settings.tags.CELERY_TAG],
+)
+
+router.include_router(
+    store_router,
 )

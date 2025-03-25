@@ -91,6 +91,9 @@ class Tags(CustomSettings):
     CELERY_TAG: str
     CELERY_PREFIX: str
 
+    BRANDS_TAG: str
+    BRANDS_PREFIX: str
+
 
 class Email(CustomSettings):
     MAIL_HOST: str

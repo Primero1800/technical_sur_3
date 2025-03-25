@@ -1,7 +1,9 @@
 __all__ = (
     "Product",
     "Brand",
+    "BrandImage",
+    "ProductImage",
 )
 
-from .product import Product
-from .brand import Brand
+from .product import Product, ProductImage
+from .brand import Brand, BrandImage

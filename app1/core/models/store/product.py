@@ -1,10 +1,25 @@
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import List
 
-from app1.core.models import (
-    IDIntPkMixin, Base, TitleSlugModel, DescriptionMixin, Title3FieldMixin
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app1.core.models import Base
+from app1.core.models.mixins import (
+    IDIntPkMixin, Title3FieldMixin, TitleSlugModel, DescriptionMixin,
 )
+from app1.core.models.store.image import ImageBase
 
 
 class Product(IDIntPkMixin, Title3FieldMixin, TitleSlugModel, DescriptionMixin, Base):
-    pass
+
+    images: Mapped[List['ProductImage']] = relationship(back_populates="product")
+
+
+class ProductImage(ImageBase):
+    product_id: Mapped[int] = mapped_column(
+            ForeignKey(Product.id),
+            nullable=False,
+            unique=False,
+        )
+
+    product: Mapped[Product] = relationship(Product, back_populates='images')

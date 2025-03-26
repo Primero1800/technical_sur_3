@@ -36,5 +36,5 @@ class BrandUpdate(BaseBrand):
 
 
 class BrandPartialUpdate(BaseBrand):
-    title: Optional[base_title_field]
-    description: Optional[base_description_field]
+    title: Optional[base_title_field] = None
+    description: Optional[base_description_field] = None

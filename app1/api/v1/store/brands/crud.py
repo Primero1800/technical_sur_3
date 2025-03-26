@@ -122,7 +122,10 @@ async def edit_brand(
     is_partial: bool = False
 ) -> Brand:
 
-    for key, val in instance.model_dump(exclude_unset=is_partial).items():
+    for key, val in instance.model_dump(
+        exclude_unset=is_partial,
+        exclude_none=is_partial,
+    ).items():
         setattr(brand, key, val)
 
     logger.warning(f"Editing {brand!r} in database")

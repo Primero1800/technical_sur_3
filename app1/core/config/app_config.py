@@ -57,15 +57,12 @@ class AppConfigurer:
                 detail=exc.errors()
             )
 
-        @app.exception_handler(RequestValidationError)
-        async def validation_exception_handler(request, exc: RequestValidationError):
-            return JSONResponse(
-                status_code=settings.app.APP_422_CODE_STATUS,
-                content={
-                    "detail": exc.errors(),
-                    "FFFFFFFFFFFFFFF": "HHHHHHHHHHHHHHHHAAAAAAANDDDLLLLLLLLLLEEEEER"
-                },
-            )
+        # @app.exception_handler(RequestValidationError)
+        # async def validation_exception_handler(request, exc: RequestValidationError):
+        #     raise HTTPException(
+        #         status_code=settings.app.APP_422_CODE_STATUS,
+        #         detail=exc.body,
+        #     )
 
         @app.exception_handler(IntegrityError)
         async def validation_exception_handler_constraints(request, exc: IntegrityError):
@@ -80,3 +77,8 @@ class AppConfigurer:
         #         status_code=status.HTTP_404_NOT_FOUND,
         #         detail=exc.msg
         #     )
+
+
+def get_message(instance):
+    msg = str(instance.orig)
+    return msg.split('DETAIL:')[-1].strip() if 'DETAIL' in msg else str(instance)

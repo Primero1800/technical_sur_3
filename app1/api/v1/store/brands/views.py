@@ -1,11 +1,11 @@
-from typing import TYPE_CHECKING, List, Sequence
+from typing import TYPE_CHECKING, List, Sequence, Optional
 
 from fastapi import APIRouter, UploadFile, Form, File, Depends, HTTPException, status, Body
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app1.exceptions import CustomException
-from .schemas import BrandCreate, BrandRead, BrandUpdate
+from .schemas import BrandCreate, BrandRead, BrandUpdate, BrandPartialUpdate
 from . import crud, utils
 from . import dependencies as deps
 
@@ -133,6 +133,39 @@ async def edit_brand(
             instance=instance,
             image_schema=image,
             session=session,
+        )
+        return await utils.get_brand_schema_from_orm(orm_model=brand)
+    except (CustomException, Exception) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=exc.msg if hasattr(exc, "msg") else str(exc)
+        )
+
+
+@router.patch(
+    "/{brand_id}/",
+    dependencies=[Depends(current_superuser), ],
+    status_code=status.HTTP_200_OK,
+    response_model=BrandRead
+)
+async def edit_brand_partial(
+    title: Optional[str] = Form(default=None),
+    description: Optional[str] = Form(default=None),
+    image: UploadFile = File(default=None),
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
+    brand: "Brand" = Depends(deps.get_one_simple)
+):
+
+    # catching ValidationError in exception_handler
+    instance: BrandPartialUpdate = BrandPartialUpdate(title=title, description=description)
+
+    try:
+        brand: "Brand" = await crud.edit_brand(
+            brand=brand,
+            instance=instance,
+            image_schema=image,
+            session=session,
+            is_partial=True,
         )
         return await utils.get_brand_schema_from_orm(orm_model=brand)
     except (CustomException, Exception) as exc:

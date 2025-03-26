@@ -17,6 +17,12 @@ class Product(IDIntPkMixin, Title3FieldMixin, TitleSlugModel, DescriptionMixin, 
         cascade="all, delete",
     )
 
+    def __str__(self):
+        return f"Product(id={self.id}, title={self.title})"
+
+    def __repr__(self):
+        return str(self)
+
 
 class ProductImage(ImageBase):
     product_id: Mapped[int] = mapped_column(
@@ -26,3 +32,9 @@ class ProductImage(ImageBase):
         )
 
     product: Mapped[Product] = relationship(Product, back_populates='images')
+
+    def __str__(self):
+        return f"ProductImage(product_id={self.product_id})"
+
+    def __repr__(self):
+        return str(self)

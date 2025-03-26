@@ -77,8 +77,3 @@ class AppConfigurer:
         #         status_code=status.HTTP_404_NOT_FOUND,
         #         detail=exc.msg
         #     )
-
-
-def get_message(instance):
-    msg = str(instance.orig)
-    return msg.split('DETAIL:')[-1].strip() if 'DETAIL' in msg else str(instance)

@@ -149,9 +149,9 @@ async def edit_brand(
     response_model=BrandRead
 )
 async def edit_brand_partial(
-    title: Optional[str] = Form(default=None),
-    description: Optional[str] = Form(default=None),
-    image: UploadFile = File(default=None),
+    title: Optional[str] = Form(default=''),
+    description: Optional[str] = Form(default=''),
+    image: Optional[UploadFile] = File(default=None),
     session: AsyncSession = Depends(DBConfigurer.session_getter),
     brand: "Brand" = Depends(deps.get_one_simple)
 ):
@@ -173,6 +173,3 @@ async def edit_brand_partial(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=exc.msg if hasattr(exc, "msg") else str(exc)
         )
-
-
-

@@ -1,6 +1,5 @@
-from typing import Annotated
+from typing import Annotated, TYPE_CHECKING
 
-from fastapi import UploadFile
 from pydantic import BaseModel, Field
 
 
@@ -23,7 +22,7 @@ class BrandCreate(BaseBrand):
 
 class BrandRead(BaseBrand):
     id: int
-    image: str
+    image_url: str
 
 
 class BrandUpdate(BaseBrand):

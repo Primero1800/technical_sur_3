@@ -12,8 +12,14 @@ async def save_image(
     folder: str,
     path: str,
     name: str = 'logo',
+    cleaning: bool = True
 ):
     directory = f"{path}/{folder}"
+
+    if cleaning and os.path.exists(directory):                                          # Очищаем директорию, если она существует
+        logger.info(f"Cleaning folder: {directory}")
+        shutil.rmtree(directory)
+
     os.makedirs(directory, exist_ok=True)                                               # Создаем директорию, если она не существует
     logger.info(f"Creating folder: {directory}")
 

@@ -1,13 +1,12 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
-from fastapi import UploadFile, Depends
+from fastapi import UploadFile
 from sqlalchemy import select, Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app1.core.config import DBConfigurer
 from app1.core.models import Brand, BrandImage
 from app1.exceptions import CustomException
 from ..utils.image_utils import save_image
@@ -16,6 +15,14 @@ if TYPE_CHECKING:
     from .schemas import BrandCreate
 
 logger = logging.getLogger(__name__)
+
+
+async def get_all(
+    session: AsyncSession,
+) -> Sequence:
+    stmt = select(Brand).options(joinedload(Brand.image))
+    result: Result = await session.execute(stmt)
+    return result.scalars().all()
 
 
 async def create_brand(
@@ -72,20 +79,6 @@ async def delete_one(
         raise CustomException(
             msg=f"Error while deleting {brand!r} from database: {exc!r}"
         )
-
-
-async def get_one_simple(
-    brand_id: int,
-    session: AsyncSession = Depends(DBConfigurer.session_getter)
-) -> Brand:
-
-    brand: Brand | None = await session.get(Brand, brand_id)
-
-    if not brand:
-        raise CustomException(
-            msg=f"Brand with id={brand_id} not found"
-        )
-    return brand
 
 
 async def get_one_complex(

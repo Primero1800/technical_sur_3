@@ -8,14 +8,19 @@ logger = logging.getLogger(__name__)
 
 
 async def save_image(
-    instance_id: int,
     image_object: UploadFile,
-    folder: str
+    folder: str,
+    path: str,
+    name: str = 'logo',
 ):
-    directory = f"{folder}/{instance_id}"
+    directory = f"{path}/{folder}"
     os.makedirs(directory, exist_ok=True)                                               # Создаем директорию, если она не существует
     logger.info(f"Creating folder: {directory}")
-    file_path = os.path.join(directory, image_object.filename)
+
+    extension = os.path.splitext(image_object.filename)[1]
+    new_file_name = f"{name}{extension}"
+    file_path = os.path.join(directory, new_file_name)
+
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(image_object.file, buffer)
         logger.info(f"Writing file: {image_object.file}")

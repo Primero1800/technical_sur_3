@@ -29,7 +29,7 @@ async def create_brand(
     session: AsyncSession,
     instance: "BrandCreate",
     image_schema: UploadFile,
-):
+) -> Brand:
     try:
         brand: Brand = Brand(**instance.model_dump())
         session.add(brand)
@@ -55,6 +55,11 @@ async def create_brand(
         session.add(image)
         await session.commit()
         logger.info(f"BrandImage {image!r} was successfully created")
+
+        return await get_one_complex(
+            brand_id=brand.id,
+            session=session,
+        )
 
     except (IntegrityError, Exception) as error:
         logger.error(f"Error {error!r} while {image!r} for {brand} creating. {brand!r} will be deleted")

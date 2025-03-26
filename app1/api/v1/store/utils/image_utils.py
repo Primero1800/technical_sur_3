@@ -6,6 +6,7 @@ from fastapi import UploadFile
 
 logger = logging.getLogger(__name__)
 
+
 async def save_image(
     instance_id: int,
     image_object: UploadFile,
@@ -18,3 +19,5 @@ async def save_image(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(image_object.file, buffer)
         logger.info(f"Writing file: {image_object.file}")
+
+    return file_path

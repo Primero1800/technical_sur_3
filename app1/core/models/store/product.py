@@ -12,7 +12,10 @@ from app1.core.models.store.image import ImageBase
 
 class Product(IDIntPkMixin, Title3FieldMixin, TitleSlugModel, DescriptionMixin, Base):
 
-    images: Mapped[List['ProductImage']] = relationship(back_populates="product")
+    images: Mapped[List['ProductImage']] = relationship(
+        back_populates="product",
+        cascade="all, delete",
+    )
 
 
 class ProductImage(ImageBase):

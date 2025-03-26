@@ -1,8 +1,8 @@
-"""brands, products, images tables created
+"""brands, products, images tables added
 
-Revision ID: d28e6449af71
+Revision ID: 88ef6a831673
 Revises: b85fcf2ff8de
-Create Date: 2025-03-25 16:17:06.562651
+Create Date: 2025-03-26 12:41:28.387641
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "d28e6449af71"
+revision: str = "88ef6a831673"
 down_revision: Union[str, None] = "b85fcf2ff8de"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -55,6 +55,7 @@ def upgrade() -> None:
             ["brand_id"],
             ["app1_brand.id"],
             name=op.f("fk_app1_brand_image_brand_id_app1_brand"),
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_app1_brand_image")),
         sa.UniqueConstraint(
@@ -70,6 +71,7 @@ def upgrade() -> None:
             ["product_id"],
             ["app1_product.id"],
             name=op.f("fk_app1_product_image_product_id_app1_product"),
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_app1_product_image")),
     )

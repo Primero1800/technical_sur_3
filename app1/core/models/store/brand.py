@@ -11,7 +11,10 @@ from app1.core.models import Base
 
 
 class Brand(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
-    image: Mapped['BrandImage'] = relationship(back_populates="brand")
+    image: Mapped['BrandImage'] = relationship(
+        back_populates="brand",
+        cascade="all, delete",
+    )
 
 
 class BrandImage(ImageBase):

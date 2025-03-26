@@ -17,7 +17,7 @@ class Product(IDIntPkMixin, Title3FieldMixin, TitleSlugModel, DescriptionMixin, 
 
 class ProductImage(ImageBase):
     product_id: Mapped[int] = mapped_column(
-            ForeignKey(Product.id),
+            ForeignKey(Product.id, ondelete="CASCADE"),
             nullable=False,
             unique=False,
         )

@@ -16,7 +16,7 @@ class Brand(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
 
 class BrandImage(ImageBase):
     brand_id: Mapped[int] = mapped_column(
-            ForeignKey(Brand.id),
+            ForeignKey(Brand.id, ondelete="CASCADE"),
             nullable=False,
             unique=True,
         )

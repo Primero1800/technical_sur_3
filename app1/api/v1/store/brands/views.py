@@ -83,12 +83,12 @@ async def get_one(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_one(
-    brand_id: int,
-    session: AsyncSession = Depends(DBConfigurer.session_getter)
+    brand: "Brand" = Depends(crud.get_one_simple),
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
 ):
     try:
         await crud.delete_one(
-            brand_id=brand_id,
+            brand=brand,
             session=session,
         )
     except CustomException as exc:

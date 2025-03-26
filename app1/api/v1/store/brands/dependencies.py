@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app1.core.config import DBConfigurer
@@ -14,7 +14,8 @@ async def get_one_simple(
     brand: Brand | None = await session.get(Brand, brand_id)
 
     if not brand:
-        raise CustomException(
-            msg=f"Brand with id={brand_id} not found"
+        raise HTTPException(
+            detail=f"Brand with id={brand_id} not found",
+            status_code=status.HTTP_404_NOT_FOUND
         )
     return brand

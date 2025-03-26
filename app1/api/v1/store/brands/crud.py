@@ -51,15 +51,9 @@ async def create_brand(
         logger.info(f"Image {image_schema!r} was successfully written")
 
         image = BrandImage(file=file_path, brand_id=brand.id)
-
         session.add(image)
         await session.commit()
         logger.info(f"BrandImage {image!r} was successfully created")
-
-        return await get_one_complex(
-            brand_id=brand.id,
-            session=session,
-        )
 
     except (IntegrityError, Exception) as error:
         logger.error(f"Error {error!r} while {image!r} for {brand} creating. {brand!r} will be deleted")
@@ -69,6 +63,11 @@ async def create_brand(
             session=session,
         )
         raise error
+
+    return await get_one_complex(
+        brand_id=brand.id,
+        session=session,
+    )
 
 
 async def delete_one(

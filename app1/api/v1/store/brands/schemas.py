@@ -1,9 +1,11 @@
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class BaseBrand(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     title: Annotated[str, Field(
         min_length=3, max_length=100,
         title="Brand's title",
@@ -22,7 +24,7 @@ class BrandCreate(BaseBrand):
 
 class BrandRead(BaseBrand):
     id: int
-    image_url: str
+    image_file: str
 
 
 class BrandUpdate(BaseBrand):

@@ -62,11 +62,35 @@ async def get_one(
             session=session,
         )
 
-        image_url = ''
-        if hasattr(brand.image, "file"):
-            image_url = brand.image.file
-            
-        return BrandRead(**brand.to_dict(), image_url=image_url)
+        image_file = brand.image.file if hasattr(brand.image, "file") else ''
+        return BrandRead(**brand.to_dict(), image_file=image_file)
+
+    except CustomException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=exc.msg
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc)
+        )
+
+
+@router.delete(
+    "/{brand_id}/",
+    dependencies=[Depends(current_superuser), ],
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_one(
+    brand_id: int,
+    session: AsyncSession = Depends(DBConfigurer.session_getter)
+):
+    try:
+        await crud.delete_one(
+            brand_id=brand_id,
+            session=session,
+        )
     except CustomException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

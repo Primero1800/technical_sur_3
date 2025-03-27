@@ -68,6 +68,7 @@ async def create_brand(
 
 @router.get(
     "/{brand_id}/",
+    dependencies=[Depends(current_superuser),],
     status_code=status.HTTP_200_OK,
     response_model=BrandRead,
 )
@@ -78,6 +79,29 @@ async def get_one(
     try:
         brand = await crud.get_one_complex(
             brand_id=brand_id,
+            session=session,
+        )
+        return await utils.get_brand_schema_from_orm(orm_model=brand)
+
+    except (CustomException, Exception) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=exc.msg if hasattr(exc, "msg") else str(exc)
+        )
+
+
+@router.get(
+    "/title/{slug}/",
+    status_code=status.HTTP_200_OK,
+    response_model=BrandRead,
+)
+async def get_one_by_slug(
+    slug: str,
+    session: AsyncSession = Depends(DBConfigurer.session_getter)
+):
+    try:
+        brand = await crud.get_one_complex(
+            slug=slug,
             session=session,
         )
         return await utils.get_brand_schema_from_orm(orm_model=brand)

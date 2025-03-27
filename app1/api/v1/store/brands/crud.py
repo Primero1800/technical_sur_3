@@ -99,17 +99,21 @@ async def delete_one(
 
 
 async def get_one_complex(
-    brand_id: int,
     session: AsyncSession,
+    brand_id: int = None,
+    slug: str = None,
 ) -> Brand:
-
-    stmt = select(Brand).where(Brand.id == brand_id).options(joinedload(Brand.image))
+    if brand_id:
+        stmt = select(Brand).where(Brand.id == brand_id).options(joinedload(Brand.image))
+    else:
+        stmt = select(Brand).where(Brand.slug == slug).options(joinedload(Brand.image))
     result: Result = await session.execute(stmt)
     brand: Brand | None = result.scalar_one_or_none()
 
     if not brand:
+        text_error = f"id={brand_id}" if brand_id else f"slug={slug!r}"
         raise CustomException(
-            msg=f"Brand with id={brand_id} not found"
+            msg=f"Brand with {text_error} not found"
         )
     return brand
 

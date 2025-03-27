@@ -1,13 +1,17 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app1.core.config.db_config import DBConfigurerInitializer
 from app1.core.models import Base
 from app1.core.models.mixins import (
     IDIntPkMixin, Title3FieldMixin, DescriptionMixin,
 )
 from app1.core.models.store.image import ImageBase
+
+if TYPE_CHECKING:
+    from app1.core.models import Rubric
 
 
 class Product(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
@@ -16,6 +20,12 @@ class Product(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
         'ProductImage',
         back_populates="product",
         cascade="all, delete",
+    )
+
+    rubrics: Mapped[list['Rubric']] = relationship(
+        secondary=DBConfigurerInitializer.utils.camel2snake('RubricProductAssociation'),
+        back_populates="products",
+        # overlaps="orders_details",
     )
 
     def __str__(self):

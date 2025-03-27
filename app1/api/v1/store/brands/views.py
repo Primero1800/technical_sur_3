@@ -149,8 +149,8 @@ async def edit_brand(
     response_model=BrandRead
 )
 async def edit_brand_partial(
-    title: Optional[str] = Form(default=''),
-    description: Optional[str] = Form(default=''),
+    title: Optional[str] = Form(default=None),
+    description: Optional[str] = Form(default=None),
     image: Optional[UploadFile] = File(default=None),
     session: AsyncSession = Depends(DBConfigurer.session_getter),
     brand: "Brand" = Depends(deps.get_one_simple)

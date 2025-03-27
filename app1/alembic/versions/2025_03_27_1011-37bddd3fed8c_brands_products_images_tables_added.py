@@ -1,8 +1,8 @@
 """brands, products, images tables added
 
-Revision ID: 88ef6a831673
+Revision ID: 37bddd3fed8c
 Revises: b85fcf2ff8de
-Create Date: 2025-03-26 12:41:28.387641
+Create Date: 2025-03-27 10:11:55.582169
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "88ef6a831673"
+revision: str = "37bddd3fed8c"
 down_revision: Union[str, None] = "b85fcf2ff8de"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

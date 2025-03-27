@@ -13,6 +13,7 @@ from app1.core.models.store.image import ImageBase
 class Product(IDIntPkMixin, Title3FieldMixin, TitleSlugModel, DescriptionMixin, Base):
 
     images: Mapped[List['ProductImage']] = relationship(
+        'ProductImage',
         back_populates="product",
         cascade="all, delete",
     )
@@ -31,7 +32,10 @@ class ProductImage(ImageBase):
             unique=False,
         )
 
-    product: Mapped[Product] = relationship(Product, back_populates='images')
+    product: Mapped[Product] = relationship(
+        Product,
+        back_populates='images'
+    )
 
     def __str__(self):
         return f"ProductImage(product_id={self.product_id})"

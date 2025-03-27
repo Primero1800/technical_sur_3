@@ -1,5 +1,6 @@
-from typing import Annotated, Optional
-from pydantic import BaseModel, Field, ConfigDict
+from typing import Annotated, Optional, Any
+from pydantic import BaseModel, Field, ConfigDict, model_validator
+from pydantic_core.core_schema import ValidationInfo
 
 from app1.api.v1.store.mixins import TitleSlugMixin
 
@@ -32,6 +33,13 @@ class BrandRead(BaseBrand):
     id: int
     image_file: str
     slug: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def image_file_getter(cls, obj: Any, info: ValidationInfo) -> Any:
+        if not hasattr(obj, "image_file") and info.context:
+            setattr(obj, 'image_file', info.context.get('image_file', ''))
+        return obj
 
 
 class BrandUpdate(BaseBrand, TitleSlugMixin):

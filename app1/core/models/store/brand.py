@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
@@ -11,6 +9,7 @@ from app1.core.models import Base
 
 
 class Brand(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
+    slug: Mapped[str]
     image: Mapped['BrandImage'] = relationship(
         "BrandImage",
         back_populates="brand",

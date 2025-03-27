@@ -5,13 +5,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app1.core.models import Base
 from app1.core.models.mixins import (
-    IDIntPkMixin, Title3FieldMixin, TitleSlugModel, DescriptionMixin,
+    IDIntPkMixin, Title3FieldMixin, DescriptionMixin,
 )
 from app1.core.models.store.image import ImageBase
 
 
-class Product(IDIntPkMixin, Title3FieldMixin, TitleSlugModel, DescriptionMixin, Base):
-
+class Product(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
+    slug: Mapped[str]
     images: Mapped[List['ProductImage']] = relationship(
         'ProductImage',
         back_populates="product",

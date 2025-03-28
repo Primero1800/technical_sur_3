@@ -104,11 +104,11 @@ async def get_one_complex(
     slug: str = None,
 ) -> Brand:
     if brand_id:
-        stmt = select(Brand).where(Brand.id == brand_id).options(joinedload(Brand.image))
+        stmt = select(Brand).where(Brand.id == brand_id).options(joinedload(Brand.image), joinedload(Brand.products))
     else:
-        stmt = select(Brand).where(Brand.slug == slug).options(joinedload(Brand.image))
+        stmt = select(Brand).where(Brand.slug == slug).options(joinedload(Brand.image), joinedload(Brand.products))
     result: Result = await session.execute(stmt)
-    brand: Brand | None = result.scalar_one_or_none()
+    brand: Brand | None = result.unique().scalar_one_or_none()
 
     if not brand:
         text_error = f"id={brand_id}" if brand_id else f"slug={slug!r}"

@@ -61,7 +61,7 @@ async def create_brand(
     except (CustomException, Exception) as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=exc.msg if hasattr(exc, "msg") else str(dict(exc))
+            detail=exc.msg if hasattr(exc, "msg") else str(exc)
         )
 
 

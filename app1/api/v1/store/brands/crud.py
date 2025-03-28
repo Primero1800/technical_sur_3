@@ -147,7 +147,7 @@ async def edit_brand(
             file_path: str = await save_image(
                 image_object=image_schema,
                 path="app1/media/brands",
-                folder=f"{brand.id}_{brand.title}"
+                folder=f"{brand.id}_{instance.slug}"
             )
         except Exception as exc:
             logger.error(f"Error while writing file {file_path!r}")
@@ -170,5 +170,3 @@ async def edit_brand(
 
     brand = await get_one_complex(brand_id=brand.id, session=session)
     return brand
-
-

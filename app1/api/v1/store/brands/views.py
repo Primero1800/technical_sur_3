@@ -25,12 +25,12 @@ router = APIRouter()
 async def get_all(
         session: AsyncSession = Depends(DBConfigurer.session_getter)
 ) -> List[BrandRead]:
-    listed_brands = await crud.get_all(
+    listed_orm_models = await crud.get_all(
         session=session
     )
     result = []
-    for brand in listed_brands:
-        result.append(await utils.get_schema_from_orm(orm_model=brand))
+    for orm_model in listed_orm_models:
+        result.append(await utils.get_schema_from_orm(orm_model=orm_model))
     return result
 
 
@@ -51,12 +51,12 @@ async def create_brand(
     instance: BrandCreate = BrandCreate(title=title, description=description)
 
     try:
-        brand = await crud.create_brand(
+        orm_model = await crud.create_one(
             instance=instance,
             image_schema=image,
             session=session,
         )
-        return await utils.get_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=orm_model)
 
     except (CustomException, Exception) as exc:
         raise HTTPException(
@@ -66,21 +66,21 @@ async def create_brand(
 
 
 @router.get(
-    "/{brand_id}/",
+    "/{id}/",
     dependencies=[Depends(current_superuser),],
     status_code=status.HTTP_200_OK,
     response_model=BrandRead,
 )
 async def get_one(
-    brand_id: int,
+    id: int,
     session: AsyncSession = Depends(DBConfigurer.session_getter)
 ):
     try:
-        brand = await crud.get_one_complex(
-            brand_id=brand_id,
+        orm_model = await crud.get_one_complex(
+            id=id,
             session=session,
         )
-        return await utils.get_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=orm_model)
 
     except (CustomException, Exception) as exc:
         raise HTTPException(
@@ -99,11 +99,11 @@ async def get_one_by_slug(
     session: AsyncSession = Depends(DBConfigurer.session_getter)
 ):
     try:
-        brand = await crud.get_one_complex(
+        orm_model = await crud.get_one_complex(
             slug=slug,
             session=session,
         )
-        return await utils.get_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=orm_model)
 
     except (CustomException, Exception) as exc:
         raise HTTPException(
@@ -113,17 +113,17 @@ async def get_one_by_slug(
 
 
 @router.delete(
-    "/{brand_id}/",
+    "/{id}/",
     dependencies=[Depends(current_superuser), ],
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_one(
-    brand: "Brand" = Depends(deps.get_one_simple),
+    orm_model: "Brand" = Depends(deps.get_one_simple),
     session: AsyncSession = Depends(DBConfigurer.session_getter),
 ):
     try:
         await crud.delete_one(
-            brand=brand,
+            orm_model=orm_model,
             session=session,
         )
     except (CustomException, Exception) as exc:
@@ -134,30 +134,30 @@ async def delete_one(
 
 
 @router.put(
-    "/{brand_id}/",
+    "/{id}/",
     dependencies=[Depends(current_superuser), ],
     status_code=status.HTTP_200_OK,
     response_model=BrandRead
 )
-async def edit_brand(
+async def edit_one(
     title: str = Form(),
     description: str = Form(),
     image: UploadFile = File(),
     session: AsyncSession = Depends(DBConfigurer.session_getter),
-    brand: "Brand" = Depends(deps.get_one_simple)
+    orm_model: "Brand" = Depends(deps.get_one_simple)
 ):
 
     # catching ValidationError in exception_handler
     instance: BrandUpdate = BrandUpdate(title=title, description=description)
 
     try:
-        brand: "Brand" = await crud.edit_brand(
-            brand=brand,
+        orm_model: "Brand" = await crud.edit_one(
+            orm_model=orm_model,
             instance=instance,
             image_schema=image,
             session=session,
         )
-        return await utils.get_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=orm_model)
     except (CustomException, Exception) as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -166,31 +166,31 @@ async def edit_brand(
 
 
 @router.patch(
-    "/{brand_id}/",
+    "/{id}/",
     dependencies=[Depends(current_superuser), ],
     status_code=status.HTTP_200_OK,
     response_model=BrandRead
 )
-async def edit_brand_partial(
+async def edit_one_partial(
     title: Optional[str] = Form(default=None),
     description: Optional[str] = Form(default=None),
     image: Optional[UploadFile] = File(default=None),
     session: AsyncSession = Depends(DBConfigurer.session_getter),
-    brand: "Brand" = Depends(deps.get_one_simple)
+    orm_model: "Brand" = Depends(deps.get_one_simple)
 ):
 
     # catching ValidationError in exception_handler
     instance: BrandPartialUpdate = BrandPartialUpdate(title=title, description=description)
 
     try:
-        brand: "Brand" = await crud.edit_brand(
-            brand=brand,
+        orm_model: "Brand" = await crud.edit_one(
+            orm_model=orm_model,
             instance=instance,
             image_schema=image,
             session=session,
             is_partial=True,
         )
-        return await utils.get_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=orm_model)
     except (CustomException, Exception) as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

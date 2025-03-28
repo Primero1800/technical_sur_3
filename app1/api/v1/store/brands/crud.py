@@ -16,44 +16,48 @@ if TYPE_CHECKING:
         BrandCreate,
     )
 
+
+CLASS = "Brand"
+_CLASS = "brand"
+
 logger = logging.getLogger(__name__)
 
 
 async def get_all(
     session: AsyncSession,
 ) -> Sequence:
-    stmt = select(Brand).options(joinedload(Brand.image))
+    stmt = select(Brand).options(joinedload(Brand.image), joinedload(Brand.products))
     result: Result = await session.execute(stmt)
-    return result.scalars().all()
+    return result.unique().scalars().all()
 
 
-async def create_brand(
+async def create_one(
     session: AsyncSession,
     instance: "BrandCreate",
     image_schema: UploadFile,
 ) -> Brand:
 
-    brand: Brand = Brand(**instance.model_dump())
+    orm_model: Brand = Brand(**instance.model_dump())
 
     try:
-        session.add(brand)
+        session.add(orm_model)
         await session.commit()
-        await session.refresh(brand)
-        logger.info(f"Brand {brand!r} was successfully created")
+        await session.refresh(orm_model)
+        logger.info(f"{CLASS} {orm_model!r} was successfully created")
     except IntegrityError as error:
-        logger.error(f"Error {error!r} while {brand!r} creating")
+        logger.error(f"Error {error!r} while {orm_model!r} creating")
         raise CustomException(
-            msg=f"Brand {brand.title!r} already exists"
+            msg=f"{CLASS} {orm_model.title!r} already exists"
         )
     except Exception as error:
-        logger.error(f"Error {error!r} while {brand!r} creating")
+        logger.error(f"Error {error!r} while {orm_model!r} creating")
         raise error
 
     try:
         file_path: str = await save_image(
             image_object=image_schema,
-            path="app1/media/brands",
-            folder=f"{brand.id}"
+            path=f"app1/media/{_CLASS}s",
+            folder=f"{orm_model.id}"
         )
     except Exception as exc:
         logger.error(f"Error wile writing file {file_path!r}")
@@ -62,64 +66,64 @@ async def create_brand(
     logger.info(f"Image {image_schema!r} was successfully written")
 
     try:
-        image: BrandImage | None = BrandImage(file=file_path, brand_id=brand.id)
+        image: BrandImage | None = BrandImage(file=file_path, brand_id=orm_model.id)
         session.add(image)
         await session.commit()
-        logger.info(f"BrandImage {image!r} was successfully created")
+        logger.info(f"{CLASS}Image {image!r} was successfully created")
     except IntegrityError as error:
-        logger.error(f"Error {error!r} while {image!r} for {brand} creating. {brand!r} will be deleted")
+        logger.error(f"Error {error!r} while {image!r} for {orm_model} creating. {orm_model!r} will be deleted")
 
         await delete_one(
-            brand=brand,
+            orm_model=orm_model,
             session=session,
         )
         raise CustomException(
-            msg=f"Error {error!r} while {image!r} for {brand} creating."
+            msg=f"Error {error!r} while {image!r} for {orm_model} creating."
         )
 
     return await get_one_complex(
-        brand_id=brand.id,
+        id=orm_model.id,
         session=session,
     )
 
 
 async def delete_one(
-    brand: Brand,
+    orm_model: Brand,
     session: AsyncSession,
 ) -> None:
     try:
-        logger.info(f"Deleting {brand!r} from database")
-        await session.delete(brand)
+        logger.info(f"Deleting {orm_model!r} from database")
+        await session.delete(orm_model)
         await session.commit()
     except IntegrityError as exc:
-        logger.error(f"Error while deleting {brand!r} from database: {exc!r}")
+        logger.error(f"Error while deleting {orm_model!r} from database: {exc!r}")
         raise CustomException(
-            msg=f"Error while deleting {brand!r} from database: {exc!r}"
+            msg=f"Error while deleting {orm_model!r} from database: {exc!r}"
         )
 
 
 async def get_one_complex(
     session: AsyncSession,
-    brand_id: int = None,
+    id: int = None,
     slug: str = None,
 ) -> Brand:
-    if brand_id:
-        stmt = select(Brand).where(Brand.id == brand_id).options(joinedload(Brand.image), joinedload(Brand.products))
+    if id:
+        stmt = select(Brand).where(Brand.id == id).options(joinedload(Brand.image), joinedload(Brand.products))
     else:
         stmt = select(Brand).where(Brand.slug == slug).options(joinedload(Brand.image), joinedload(Brand.products))
     result: Result = await session.execute(stmt)
-    brand: Brand | None = result.unique().scalar_one_or_none()
+    orm_model: Brand | None = result.unique().scalar_one_or_none()
 
-    if not brand:
-        text_error = f"id={brand_id}" if brand_id else f"slug={slug!r}"
+    if not orm_model:
+        text_error = f"id={id}" if id else f"slug={slug!r}"
         raise CustomException(
-            msg=f"Brand with {text_error} not found"
+            msg=f"{CLASS} with {text_error} not found"
         )
-    return brand
+    return orm_model
 
 
-async def edit_brand(
-    brand: Brand,
+async def edit_one(
+    orm_model: Brand,
     instance: Any,
     image_schema: UploadFile,
     session: AsyncSession,
@@ -130,43 +134,43 @@ async def edit_brand(
         exclude_unset=is_partial,
         exclude_none=is_partial,
     ).items():
-        setattr(brand, key, val)
+        setattr(orm_model, key, val)
 
-    logger.warning(f"Editing {brand!r} in database")
+    logger.warning(f"Editing {orm_model!r} in database")
     try:
         await session.commit()
-        await session.refresh(brand)
+        await session.refresh(orm_model)
     except IntegrityError as exc:
-        logger.error(f"Error while editing {brand!r} in database: {exc!r}")
+        logger.error(f"Error while editing {orm_model!r} in database: {exc!r}")
         raise CustomException(
-            msg=f"Error while editing {brand!r} in database: {exc!r}"
+            msg=f"Error while editing {orm_model!r} in database: {exc!r}"
         )
 
     if image_schema:
         try:
             file_path: str = await save_image(
                 image_object=image_schema,
-                path="app1/media/brands",
-                folder=f"{brand.id}"
+                path=f"app1/media/{_CLASS}s",
+                folder=f"{orm_model.id}"
             )
         except Exception as exc:
             logger.error(f"Error while writing file {file_path!r}")
             raise exc
         logger.info(f"Image {image_schema!r} was successfully written")
 
-        brand_image: BrandImage | None = None
+        image: BrandImage | None = None
         try:
-            stmt = select(BrandImage).where(BrandImage.brand_id == brand.id)
-            brand_image = await session.scalar(stmt)
-            if brand_image.file != file_path:
-                brand_image.file = file_path
-                logger.warning(f"Editing {brand_image!r} in database")
+            stmt = select(BrandImage).where(BrandImage.brand_id == orm_model.id)
+            image = await session.scalar(stmt)
+            if image.file != file_path:
+                image.file = file_path
+                logger.warning(f"Editing {image!r} in database")
                 await session.commit()
         except IntegrityError as exc:
-            logger.error(f"Error while editing BrandImage {brand_image} in database: {exc}")
+            logger.error(f"Error while editing {CLASS}Image {image} in database: {exc}")
             raise CustomException(
                 msg=f"{exc}"
             )
 
-    brand = await get_one_complex(brand_id=brand.id, session=session)
-    return brand
+    orm_model = await get_one_complex(id=orm_model.id, session=session)
+    return orm_model

@@ -54,7 +54,7 @@ class AppConfigurer:
         async def validation_error_exception_handler(request, exc: ValidationError):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=exc.errors()
+                detail=exc.errors() if hasattr(exc, "errors") else exc
             )
 
         # @app.exception_handler(RequestValidationError)

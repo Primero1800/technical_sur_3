@@ -13,7 +13,7 @@ from ..utils.image_utils import save_image
 
 if TYPE_CHECKING:
     from .schemas import (
-        BrandCreate, BrandUpdate, BrandPartialUpdate,
+        BrandCreate,
     )
 
 logger = logging.getLogger(__name__)

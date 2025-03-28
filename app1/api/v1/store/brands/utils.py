@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from app1.api.v1.store.brands.schemas import BrandRead
+from .schemas import BrandRead
 
 if TYPE_CHECKING:
     from app1.core.models import Brand

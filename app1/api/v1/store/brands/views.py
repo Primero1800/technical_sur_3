@@ -40,7 +40,7 @@ async def get_all(
     status_code=status.HTTP_201_CREATED,
     response_model=BrandRead,
 )
-async def create_brand(
+async def create_one(
     title: str = Form(),
     description: str = Form(),
     image: UploadFile = File(),

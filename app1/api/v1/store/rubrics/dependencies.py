@@ -4,17 +4,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app1.core.config import DBConfigurer
 from app1.core.models import Rubric
 
+CLASS = "Rubric"
+
 
 async def get_one_simple(
-    rubric_id: int,
+    id: int,
     session: AsyncSession = Depends(DBConfigurer.session_getter)
 ) -> Rubric:
 
-    rubric: Rubric | None = await session.get(Rubric, rubric_id)
+    orm_model: Rubric | None = await session.get(Rubric, id)
 
-    if not rubric:
+    if not orm_model:
         raise HTTPException(
-            detail=f"Rubric with id={rubric_id} not found",
+            detail=f"{CLASS} with id={id} not found",
             status_code=status.HTTP_404_NOT_FOUND
         )
-    return rubric
+    return orm_model

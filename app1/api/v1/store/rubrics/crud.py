@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence, TYPE_CHECKING
+from typing import Sequence, TYPE_CHECKING, Any
 
 from fastapi import UploadFile
 from sqlalchemy import select, Result
@@ -56,7 +56,7 @@ async def create_rubric(
         file_path: str = await save_image(
             image_object=image_schema,
             path="app1/media/rubrics",
-            folder=f"{rubric.id}_{instance.slug}"
+            folder=f"{rubric.id}"
         )
     except Exception as exc:
         logger.error(f"Error wile writing file {file_path!r}")
@@ -119,4 +119,58 @@ async def get_one_complex(
         raise CustomException(
             msg=f"Rubric with {text_error} not found"
         )
+    return rubric
+
+
+async def edit_rubric(
+    rubric: Rubric,
+    instance: Any,
+    image_schema: UploadFile,
+    session: AsyncSession,
+    is_partial: bool = False
+) -> Rubric:
+
+    for key, val in instance.model_dump(
+        exclude_unset=is_partial,
+        exclude_none=is_partial,
+    ).items():
+        setattr(rubric, key, val)
+
+    logger.warning(f"Editing {rubric!r} in database")
+    try:
+        await session.commit()
+        await session.refresh(rubric)
+    except IntegrityError as exc:
+        logger.error(f"Error while editing {rubric!r} in database: {exc!r}")
+        raise CustomException(
+            msg=f"Error while editing {rubric!r} in database: {exc!r}"
+        )
+
+    if image_schema:
+        try:
+            file_path: str = await save_image(
+                image_object=image_schema,
+                path="app1/media/rubrics",
+                folder=f"{rubric.id}"
+            )
+        except Exception as exc:
+            logger.error(f"Error while writing file {file_path!r}")
+            raise exc
+        logger.info(f"Image {image_schema!r} was successfully written")
+
+        rubric_image: RubricImage | None = None
+        try:
+            stmt = select(RubricImage).where(RubricImage.rubric_id == rubric.id)
+            rubric_image = await session.scalar(stmt)
+            if rubric_image.file != file_path:
+                rubric_image.file = file_path
+                logger.warning(f"Editing {rubric_image!r} in database")
+                await session.commit()
+        except IntegrityError as exc:
+            logger.error(f"Error while editing RubricImage {rubric_image} in database: {exc}")
+            raise CustomException(
+                msg=f"{exc}"
+            )
+
+    rubric = await get_one_complex(rubric_id=rubric.id, session=session)
     return rubric

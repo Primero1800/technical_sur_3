@@ -53,7 +53,7 @@ async def create_brand(
         file_path: str = await save_image(
             image_object=image_schema,
             path="app1/media/brands",
-            folder=f"{brand.id}_{instance.slug}"
+            folder=f"{brand.id}"
         )
     except Exception as exc:
         logger.error(f"Error wile writing file {file_path!r}")
@@ -147,7 +147,7 @@ async def edit_brand(
             file_path: str = await save_image(
                 image_object=image_schema,
                 path="app1/media/brands",
-                folder=f"{brand.id}_{instance.slug}"
+                folder=f"{brand.id}"
             )
         except Exception as exc:
             logger.error(f"Error while writing file {file_path!r}")

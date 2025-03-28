@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, TYPE_CHECKING, Optional
 
 from fastapi import APIRouter, status, Depends, Form, UploadFile, File, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,7 +11,13 @@ from . import dependencies as deps
 from .schemas import (
     RubricRead,
     RubricCreate,
+    RubricUpdate,
+    RubricPartialUpdate,
 )
+
+if TYPE_CHECKING:
+    from app1.core.models import Rubric
+
 
 router = APIRouter()
 
@@ -128,5 +134,70 @@ async def delete_one(
     except (CustomException, Exception) as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+            detail=exc.msg if hasattr(exc, "msg") else str(exc)
+        )
+
+
+@router.put(
+    "/{rubric_id}/",
+    dependencies=[Depends(current_superuser), ],
+    status_code=status.HTTP_200_OK,
+    response_model=RubricRead
+)
+async def edit_rubric(
+    title: str = Form(),
+    description: str = Form(),
+    image: UploadFile = File(),
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
+    rubric: "Rubric" = Depends(deps.get_one_simple)
+):
+
+    # catching ValidationError in exception_handler
+    instance: RubricUpdate = RubricUpdate(title=title, description=description)
+
+    try:
+        rubric: "Rubric" = await crud.edit_rubric(
+            rubric=rubric,
+            instance=instance,
+            image_schema=image,
+            session=session,
+        )
+        return await utils.get_schema_from_orm(orm_model=rubric)
+    except (CustomException, Exception) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=exc.msg if hasattr(exc, "msg") else str(exc)
+        )
+
+
+@router.patch(
+    "/{rubric_id}/",
+    dependencies=[Depends(current_superuser), ],
+    status_code=status.HTTP_200_OK,
+    response_model=RubricRead
+)
+async def edit_rubric_partial(
+    title: Optional[str] = Form(default=None),
+    description: Optional[str] = Form(default=None),
+    image: Optional[UploadFile] = File(default=None),
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
+    rubric: "Rubric" = Depends(deps.get_one_simple)
+):
+
+    # catching ValidationError in exception_handler
+    instance: RubricPartialUpdate = RubricPartialUpdate(title=title, description=description)
+
+    try:
+        rubric: "Rubric" = await crud.edit_rubric(
+            rubric=rubric,
+            instance=instance,
+            image_schema=image,
+            session=session,
+            is_partial=True,
+        )
+        return await utils.get_schema_from_orm(orm_model=rubric)
+    except (CustomException, Exception) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=exc.msg if hasattr(exc, "msg") else str(exc)
         )

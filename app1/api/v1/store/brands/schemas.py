@@ -1,4 +1,4 @@
-from typing import Annotated, Optional, Any
+from typing import Annotated, Optional, Any, List
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 from pydantic_core.core_schema import ValidationInfo
 
@@ -33,6 +33,7 @@ class BrandRead(BaseBrand):
     id: int
     image_file: str
     slug: str
+    products: Optional[List[Any]]
 
     @model_validator(mode="before")
     @classmethod

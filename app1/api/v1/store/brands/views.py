@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, List, Sequence, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from fastapi import APIRouter, UploadFile, Form, File, Depends, HTTPException, status, Body
-from pydantic import ValidationError
+from fastapi import APIRouter, UploadFile, Form, File, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app1.exceptions import CustomException
@@ -13,7 +12,7 @@ from app1.core.auth.fastapi_users_config import current_superuser
 from app1.core.config import DBConfigurer
 
 if TYPE_CHECKING:
-    from app1.core.models.store import Brand
+    from app1.core.models import Brand
 
 router = APIRouter()
 
@@ -31,7 +30,7 @@ async def get_all(
     )
     result = []
     for brand in listed_brands:
-        result.append(await utils.get_brand_schema_from_orm(orm_model=brand))
+        result.append(await utils.get_schema_from_orm(orm_model=brand))
     return result
 
 
@@ -57,7 +56,7 @@ async def create_brand(
             image_schema=image,
             session=session,
         )
-        return await utils.get_brand_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=brand)
 
     except (CustomException, Exception) as exc:
         raise HTTPException(
@@ -81,7 +80,7 @@ async def get_one(
             brand_id=brand_id,
             session=session,
         )
-        return await utils.get_brand_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=brand)
 
     except (CustomException, Exception) as exc:
         raise HTTPException(
@@ -104,7 +103,7 @@ async def get_one_by_slug(
             slug=slug,
             session=session,
         )
-        return await utils.get_brand_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=brand)
 
     except (CustomException, Exception) as exc:
         raise HTTPException(
@@ -158,7 +157,7 @@ async def edit_brand(
             image_schema=image,
             session=session,
         )
-        return await utils.get_brand_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=brand)
     except (CustomException, Exception) as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -191,7 +190,7 @@ async def edit_brand_partial(
             session=session,
             is_partial=True,
         )
-        return await utils.get_brand_schema_from_orm(orm_model=brand)
+        return await utils.get_schema_from_orm(orm_model=brand)
     except (CustomException, Exception) as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

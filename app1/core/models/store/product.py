@@ -9,9 +9,14 @@ from app1.core.models.mixins import (
     IDIntPkMixin, Title3FieldMixin, DescriptionMixin,
 )
 from app1.core.models.store.image import ImageBase
+# from app1.core.models import Brand
+from app1.core.config.db_config import DBConfigurer
 
 if TYPE_CHECKING:
-    from app1.core.models import Rubric
+    from app1.core.models import (
+        Rubric,
+        Brand,
+    )
 
 
 class Product(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
@@ -26,6 +31,17 @@ class Product(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
         secondary=DBConfigurerInitializer.utils.camel2snake('RubricProductAssociation'),
         back_populates="products",
         # overlaps="orders_details",
+    )
+
+    brand_id: Mapped[int] = mapped_column(
+        ForeignKey(f"{DBConfigurer.utils.camel2snake('Brand')}.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=False,
+    )
+
+    brand: Mapped['Brand'] = relationship(
+        'Brand',
+        back_populates='products',
     )
 
     def __str__(self):

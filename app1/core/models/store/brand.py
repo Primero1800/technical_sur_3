@@ -1,3 +1,5 @@
+from typing import List, TYPE_CHECKING
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
@@ -7,11 +9,22 @@ from app1.core.models.mixins import (
 from app1.core.models.store.image import ImageBase
 from app1.core.models import Base
 
+if TYPE_CHECKING:
+    from app1.core.models import (
+        Product,
+    )
+
 
 class Brand(IDIntPkMixin, Title3FieldMixin, DescriptionMixin, Base):
     slug: Mapped[str]
     image: Mapped['BrandImage'] = relationship(
         "BrandImage",
+        back_populates="brand",
+        cascade="all, delete",
+    )
+
+    products: Mapped[List['Product']] = relationship(
+        'Product',
         back_populates="brand",
         cascade="all, delete",
     )

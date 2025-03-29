@@ -97,6 +97,9 @@ class Tags(CustomSettings):
     RUBRICS_TAG: str
     RUBRICS_PREFIX: str
 
+    PRODUCTS_TAG: str
+    PRODUCTS_PREFIX: str
+
 
 class Email(CustomSettings):
     MAIL_HOST: str

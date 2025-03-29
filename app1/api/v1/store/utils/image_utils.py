@@ -16,9 +16,8 @@ async def save_image(
 ):
     directory = f"{path}/{folder}"
 
-    if cleaning and os.path.exists(directory):                                          # Очищаем директорию, если она существует
-        logger.info(f"Cleaning folder: {directory}")
-        shutil.rmtree(directory)
+    if cleaning:
+        await del_directory(directory=directory)
 
     os.makedirs(directory, exist_ok=True)                                               # Создаем директорию, если она не существует
     logger.info(f"Creating folder: {directory}")
@@ -32,3 +31,16 @@ async def save_image(
         logger.info(f"Writing file: {image_object.file}")
 
     return file_path
+
+
+async def del_directory(
+    folder: str = '',
+    path: str = '',
+    directory: str = None
+):
+    if not directory:
+        directory = f"{path}/{folder}"
+
+    if os.path.exists(directory):                                          # Очищаем директорию, если она существует
+        logger.info(f"Cleaning folder: {directory}")
+        shutil.rmtree(directory)

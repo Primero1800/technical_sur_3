@@ -22,18 +22,16 @@ class BaseBrand(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     title: base_title_field
-    description: base_description_field
 
 
 class BrandCreate(BaseBrand, TitleSlugMixin):
-    pass
+    description: base_description_field
 
 
-class BrandRead(BaseBrand):
+class BrandShort(BaseBrand):
     id: int
     image_file: str
     slug: str
-    products: Optional[List[Any]]
 
     @model_validator(mode="before")
     @classmethod
@@ -43,8 +41,13 @@ class BrandRead(BaseBrand):
         return obj
 
 
+class BrandRead(BrandShort):
+    description: base_description_field
+    products: Optional[List[Any]]
+
+
 class BrandUpdate(BaseBrand, TitleSlugMixin):
-    pass
+    description: base_description_field
 
 
 class BrandPartialUpdate(BaseBrand, TitleSlugMixin):

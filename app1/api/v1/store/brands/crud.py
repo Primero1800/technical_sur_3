@@ -7,7 +7,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app1.core.models import Brand, BrandImage
+from app1.core.models import (
+    Brand, BrandImage,
+    Product,
+)
 from app1.exceptions import CustomException
 from ..utils.image_utils import save_image
 
@@ -26,7 +29,22 @@ logger = logging.getLogger(__name__)
 async def get_all(
     session: AsyncSession,
 ) -> Sequence:
-    stmt = select(Brand).options(joinedload(Brand.image), joinedload(Brand.products)).order_by(Brand.id)
+    stmt = select(
+        Brand,
+    ).options(joinedload(Brand.image)).order_by(Brand.id)
+
+    result: Result = await session.execute(stmt)
+    return result.unique().scalars().all()
+
+
+async def get_all_full(
+    session: AsyncSession,
+) -> Sequence:
+    stmt = select(
+        Brand,
+        Product,
+    ).options(joinedload(Brand.image), joinedload(Brand.products), joinedload(Product.images)).order_by(Brand.id)
+
     result: Result = await session.execute(stmt)
     return result.unique().scalars().all()
 
@@ -107,10 +125,20 @@ async def get_one_complex(
     id: int = None,
     slug: str = None,
 ) -> Brand:
+
+    stmt_select = select(
+        Brand,
+        Product,
+    )
     if id:
-        stmt = select(Brand).where(Brand.id == id).options(joinedload(Brand.image), joinedload(Brand.products))
+        stmt_filter = stmt_select.where(Brand.id == id)
     else:
-        stmt = select(Brand).where(Brand.slug == slug).options(joinedload(Brand.image), joinedload(Brand.products))
+        stmt_filter = stmt_select.where(Brand.slug == slug)
+
+    stmt = stmt_filter.options(
+        joinedload(Brand.image), joinedload(Brand.products), joinedload(Product.images)
+    ).order_by(Brand.id)
+
     result: Result = await session.execute(stmt)
     orm_model: Brand | None = result.unique().scalar_one_or_none()
 

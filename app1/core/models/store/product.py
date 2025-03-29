@@ -9,7 +9,6 @@ from app1.core.models.mixins import (
     IDIntPkMixin, Title3FieldMixin, DescriptionMixin,
 )
 from app1.core.models.store.image import ImageBase
-# from app1.core.models import Brand
 from app1.core.config.db_config import DBConfigurer
 
 if TYPE_CHECKING:

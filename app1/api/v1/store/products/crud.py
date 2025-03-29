@@ -30,3 +30,18 @@ async def get_all(
     stmt = select(Product).options(joinedload(Product.images), joinedload(Product.rubrics), joinedload(Product.brand))
     result: Result = await session.execute(stmt)
     return result.unique().scalars().all()
+
+
+async def delete_one(
+    orm_model: Product,
+    session: AsyncSession,
+) -> None:
+    try:
+        logger.info(f"Deleting {orm_model!r} from database")
+        await session.delete(orm_model)
+        await session.commit()
+    except IntegrityError as exc:
+        logger.error(f"Error while deleting {orm_model!r} from database: {exc!r}")
+        raise CustomException(
+            msg=f"Error while deleting {orm_model!r} from database: {exc!r}"
+        )

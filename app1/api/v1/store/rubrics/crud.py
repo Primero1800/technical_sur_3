@@ -108,9 +108,13 @@ async def get_one_complex(
     slug: str = None,
 ) -> Rubric:
     if id:
-        stmt = select(Rubric).where(Rubric.id == id).options(joinedload(Rubric.image), joinedload(Rubric.products))
+        stmt = select(Rubric).where(Rubric.id == id).options(
+            joinedload(Rubric.image), joinedload(Rubric.products)
+        ).order_by(Rubric.id)
     else:
-        stmt = select(Rubric).where(Rubric.slug == slug).options(joinedload(Rubric.image), joinedload(Rubric.products))
+        stmt = select(Rubric).where(Rubric.slug == slug).options(
+            joinedload(Rubric.image), joinedload(Rubric.products)
+        ).order_by(Rubric.id)
     result: Result = await session.execute(stmt)
     orm_model: Rubric | None = result.unique().scalar_one_or_none()
 

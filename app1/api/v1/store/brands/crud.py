@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 async def get_all(
     session: AsyncSession,
 ) -> Sequence:
-    stmt = select(Brand).options(joinedload(Brand.image), joinedload(Brand.products))
+    stmt = select(Brand).options(joinedload(Brand.image), joinedload(Brand.products)).order_by(Brand.id)
     result: Result = await session.execute(stmt)
     return result.unique().scalars().all()
 

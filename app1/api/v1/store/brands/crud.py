@@ -29,9 +29,9 @@ logger = logging.getLogger(__name__)
 async def get_all(
     session: AsyncSession,
 ) -> Sequence:
-    stmt = select(
-        Brand,
-    ).options(joinedload(Brand.image)).order_by(Brand.id)
+    stmt = select(Brand).options(
+        joinedload(Brand.image)
+    ).order_by(Brand.id)
 
     result: Result = await session.execute(stmt)
     return result.unique().scalars().all()
@@ -40,10 +40,10 @@ async def get_all(
 async def get_all_full(
     session: AsyncSession,
 ) -> Sequence:
-    stmt = select(
-        Brand,
-        Product,
-    ).options(joinedload(Brand.image), joinedload(Brand.products), joinedload(Product.images)).order_by(Brand.id)
+    stmt = select(Brand).options(
+        joinedload(Brand.image),
+        joinedload(Brand.products).joinedload(Product.images),
+    ).order_by(Brand.id)
 
     result: Result = await session.execute(stmt)
     return result.unique().scalars().all()
@@ -126,17 +126,15 @@ async def get_one_complex(
     slug: str = None,
 ) -> Brand:
 
-    stmt_select = select(
-        Brand,
-        Product,
-    )
+    stmt_select = select(Brand)
     if id:
         stmt_filter = stmt_select.where(Brand.id == id)
     else:
         stmt_filter = stmt_select.where(Brand.slug == slug)
 
     stmt = stmt_filter.options(
-        joinedload(Brand.image), joinedload(Brand.products), joinedload(Product.images)
+        joinedload(Brand.image),
+        joinedload(Brand.products).joinedload(Product.images),
     ).order_by(Brand.id)
 
     result: Result = await session.execute(stmt)

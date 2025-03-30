@@ -22,18 +22,16 @@ class BaseRubric(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     title: base_title_field
-    description: base_description_field
 
 
 class RubricCreate(BaseRubric, TitleSlugMixin):
-    pass
+    description: base_description_field
 
 
-class RubricRead(BaseRubric):
+class RubricShort(BaseRubric):
     id: int
     image_file: str
     slug: str
-    products: Optional[List[Any]]
 
     @model_validator(mode="before")
     @classmethod
@@ -43,8 +41,13 @@ class RubricRead(BaseRubric):
         return obj
 
 
+class RubricRead(BaseRubric):
+    description: base_description_field
+    products: Optional[List[Any]]
+
+
 class RubricUpdate(BaseRubric, TitleSlugMixin):
-    pass
+    description: base_description_field
 
 
 class RubricPartialUpdate(BaseRubric, TitleSlugMixin):

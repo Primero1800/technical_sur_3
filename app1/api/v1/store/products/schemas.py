@@ -22,38 +22,32 @@ class BaseProduct(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     title: base_title_field
-    description: base_description_field
 
     brand_id: int
-    rubric_ids: List[int]
 
 
 class ProductCreate(BaseProduct, TitleSlugMixin):
-    pass
+    description: base_description_field
 
 
-class ProductRead(BaseProduct):
+class ProductShort(BaseProduct):
     id: int
-    # image_file: str
+    image_file: str
     slug: str
+
+
+class ProductRead(ProductShort):
     rubrics: List[Any]
     images: List[Any]
     brand: Any
 
 
-    # @model_validator(mode="before")
-    # @classmethod
-    # def image_file_getter(cls, obj: Any, info: ValidationInfo) -> Any:
-    #     if not hasattr(obj, "image_file") and info.context:
-    #         setattr(obj, 'image_file', info.context.get('image_file', ''))
-    #     return obj
-
-
 class ProductUpdate(BaseProduct, TitleSlugMixin):
+    description: base_description_field
     pass
 
 
 class ProductPartialUpdate(BaseProduct, TitleSlugMixin):
+    title: Optional[base_title_field] = None
+    description: Optional[base_description_field] = None
     pass
-    # title: Optional[base_title_field] = None
-    # description: Optional[base_description_field] = None

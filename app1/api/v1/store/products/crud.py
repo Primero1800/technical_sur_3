@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Sequence, Any
+from typing import TYPE_CHECKING, Sequence, Any, List
 
 from fastapi import UploadFile
 from sqlalchemy import select, Result
@@ -7,9 +7,17 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app1.core.models import Product, ProductImage
+from app1.core.models import (
+    Product,
+    ProductImage,
+    Brand,
+    Rubric,
+)
 from app1.exceptions import CustomException
-from ..utils.image_utils import save_image
+from ..utils.image_utils import save_image, del_directory
+
+from app1.api.v1.store.brands.dependencies import get_one_simple as brands_deps_get_one
+from app1.api.v1.store.rubrics.dependencies import get_one_simple as rubrics_deps_get_one
 
 if TYPE_CHECKING:
     from .schemas import (
@@ -27,7 +35,24 @@ logger = logging.getLogger(__name__)
 async def get_all(
     session: AsyncSession,
 ) -> Sequence:
-    stmt = select(Product).options(joinedload(Product.images), joinedload(Product.rubrics), joinedload(Product.brand))
+    stmt = select(Product).options(
+        joinedload(Product.images),
+        joinedload(Product.brand),
+    ).order_by(Product.id)
+    result: Result = await session.execute(stmt)
+    return result.unique().scalars().all()
+
+
+async def get_all_full(
+    session: AsyncSession,
+) -> Sequence:
+
+    stmt = select(Product).options(
+        joinedload(Product.images),
+        joinedload(Product.rubrics).joinedload(Rubric.image),
+        joinedload(Product.brand).joinedload(Brand.image),
+    ).order_by(Product.id)
+
     result: Result = await session.execute(stmt)
     return result.unique().scalars().all()
 
@@ -45,3 +70,134 @@ async def delete_one(
         raise CustomException(
             msg=f"Error while deleting {orm_model!r} from database: {exc!r}"
         )
+
+
+async def create_one(
+    session: AsyncSession,
+    instance: "ProductCreate",
+    image_schemas: List[UploadFile],
+    rubric_ids: List[int],
+) -> Product:
+
+    orm_model: Product = Product(
+        **instance.model_dump(),
+    )
+
+    # CHECKING BRAND_ID VALIDATION
+
+    brand_orm_model: "Brand" = await brands_deps_get_one(
+        id=instance.brand_id,
+        session=session,
+    )
+
+    # CHECKING RUBRICS_IDS VALIDATION
+
+    rubric_ids_set = set(rubric_ids)
+    rubrics_orm_models: List["Rubric"] = []
+    for rubric_id in rubric_ids_set:
+        rubric_orm_model: "Rubric" = await rubrics_deps_get_one(
+            id=rubric_id,
+            session=session,
+        )
+        rubrics_orm_models.append(rubric_orm_model)
+
+    # CREATING PRODUCT IN DATABASE
+
+    try:
+        session.add(orm_model)
+
+        for rubric_orm_model in rubrics_orm_models:
+            orm_model.rubrics.append(rubric_orm_model)
+
+        await session.commit()
+        await session.refresh(orm_model)
+        logger.info(f"{CLASS} {orm_model!r} was successfully created")
+
+    except IntegrityError as error:
+        logger.error(f"Error {error!r} while {orm_model!r} creating")
+        raise CustomException(
+            msg=f"{CLASS} {orm_model.title!r} already exists"
+        )
+    except Exception as error:
+        logger.error(f"Error {error!r} while {orm_model!r} creating")
+        raise error
+
+    # WORKING WITH IMAGES
+
+    folder: str = f"{orm_model.id}"
+    path: str = f"app1/media/{_CLASS}s"
+    file_pathes: list = []
+
+    for index, image_schema in enumerate(image_schemas):
+        try:
+            file_path: str = await save_image(
+                image_object=image_schema,
+                path=path,
+                folder=folder,
+                cleaning=False,
+                name=f"pic_{index}",
+            )
+            file_pathes.append(file_path)
+
+        except Exception as error:
+            logger.error(f"Error wile writing file {file_path!r}")
+            await del_directory(folder=folder, path=path)
+            await delete_one(
+                orm_model=orm_model,
+                session=session,
+            )
+            raise CustomException(
+                msg=f"Error {error!r} while {image!r} for {orm_model} creating."
+            )
+
+        logger.info(f"Image {image_schema!r} was successfully written")
+
+        try:
+            image: ProductImage | None = ProductImage(file=file_path, product_id=orm_model.id)
+            session.add(image)
+            await session.commit()
+            logger.info(f"{CLASS}Image {image!r} was successfully created")
+        except IntegrityError as error:
+            logger.error(f"Error {error!r} while {image!r} for {orm_model} creating. {orm_model!r} will be deleted")
+            await del_directory(folder=folder, path=path)
+            await delete_one(
+                orm_model=orm_model,
+                session=session,
+            )
+            raise CustomException(
+                msg=f"Error {error!r} while {image!r} for {orm_model} creating."
+            )
+
+    print("BEFORE GETTING FILNAL ONE ", orm_model)
+    return await get_one_complex(
+        id=orm_model.id,
+        session=session,
+    )
+
+
+async def get_one_complex(
+    session: AsyncSession,
+    id: int = None,
+    slug: str = None,
+) -> Product:
+
+    stmt_select = select(Product)
+    if id:
+        stmt_filter = stmt_select.where(Product.id == id)
+    else:
+        stmt_filter = stmt_select.where(Product.slug == slug)
+
+    stmt = stmt_filter.options(
+        joinedload(Product.images),
+        joinedload(Product.rubrics).joinedload(Rubric.image),
+        joinedload(Product.brand).joinedload(Brand.image),
+    )
+    result: Result = await session.execute(stmt)
+    orm_model: Product | None = result.unique().scalar()
+
+    if not orm_model:
+        text_error = f"id={id}" if id else f"slug={slug!r}"
+        raise CustomException(
+            msg=f"{CLASS} with {text_error} not found"
+        )
+    return orm_model

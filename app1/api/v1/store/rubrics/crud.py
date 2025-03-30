@@ -7,7 +7,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app1.core.models import Rubric, RubricImage
+from app1.core.models import (
+    Rubric, RubricImage,
+    Product,
+)
 from app1.exceptions import CustomException
 from ..utils.image_utils import save_image
 
@@ -26,7 +29,22 @@ logger = logging.getLogger(__name__)
 async def get_all(
     session: AsyncSession,
 ) -> Sequence:
-    stmt = select(Rubric).options(joinedload(Rubric.image), joinedload(Rubric.products))
+    stmt = select(Rubric).options(
+        joinedload(Rubric.image)
+    ).order_by(Rubric.id)
+
+    result: Result = await session.execute(stmt)
+    return result.unique().scalars().all()
+
+
+async def get_all_full(
+    session: AsyncSession,
+) -> Sequence:
+    stmt = select(Rubric).options(
+        joinedload(Rubric.image),
+        joinedload(Rubric.products).joinedload(Product.images),
+    ).order_by(Rubric.id)
+
     result: Result = await session.execute(stmt)
     return result.unique().scalars().all()
 
@@ -107,16 +125,20 @@ async def get_one_complex(
     id: int = None,
     slug: str = None,
 ) -> Rubric:
+
+    stmt_select = select(Rubric)
     if id:
-        stmt = select(Rubric).where(Rubric.id == id).options(
-            joinedload(Rubric.image), joinedload(Rubric.products)
-        ).order_by(Rubric.id)
+        stmt_filter = stmt_select.where(Rubric.id == id)
     else:
-        stmt = select(Rubric).where(Rubric.slug == slug).options(
-            joinedload(Rubric.image), joinedload(Rubric.products)
-        ).order_by(Rubric.id)
+        stmt_filter = stmt_select.where(Rubric.slug == slug)
+
+    stmt = stmt_filter.options(
+        joinedload(Rubric.image),
+        joinedload(Rubric.products).joinedload(Product.images)
+    )
+
     result: Result = await session.execute(stmt)
-    orm_model: Rubric | None = result.unique().scalar_one_or_none()
+    orm_model: Rubric | None = result.unique().scalar()
 
     if not orm_model:
         text_error = f"id={id}" if id else f"slug={slug!r}"

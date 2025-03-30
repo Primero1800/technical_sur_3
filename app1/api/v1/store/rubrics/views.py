@@ -4,7 +4,9 @@ from fastapi import APIRouter, UploadFile, Form, File, Depends, HTTPException, s
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app1.exceptions import CustomException
-from .schemas import RubricCreate, RubricRead, RubricUpdate, RubricPartialUpdate
+from .schemas import (
+    RubricCreate, RubricRead, RubricUpdate, RubricPartialUpdate, RubricShort,
+)
 from . import crud, utils
 from . import dependencies as deps
 
@@ -19,13 +21,31 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_model=List[RubricRead],
+    response_model=List[RubricShort],
     status_code=status.HTTP_200_OK,
 )
 async def get_all(
         session: AsyncSession = Depends(DBConfigurer.session_getter)
-) -> List[RubricRead]:
+):
     listed_orm_models = await crud.get_all(
+        session=session
+    )
+    result = []
+    for orm_model in listed_orm_models:
+        result.append(await utils.get_short_schema_from_orm(orm_model=orm_model))
+    return result
+
+
+@router.get(
+    "/full/",
+    dependencies=[Depends(current_superuser),],
+    response_model=List[RubricRead],
+    status_code=status.HTTP_200_OK,
+)
+async def get_all_full(
+        session: AsyncSession = Depends(DBConfigurer.session_getter)
+):
+    listed_orm_models = await crud.get_all_full(
         session=session
     )
     result = []

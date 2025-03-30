@@ -1,9 +1,10 @@
 import logging
 from typing import TYPE_CHECKING, Sequence, Any, List
 
+from asyncpg import UniqueViolationError
 from fastapi import UploadFile
 from sqlalchemy import select, Result
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, PendingRollbackError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -85,42 +86,46 @@ async def create_one(
 
     # CHECKING BRAND_ID VALIDATION
 
-    brand_orm_model: "Brand" = await brands_deps_get_one(
-        id=instance.brand_id,
+    brand_orm_model: "Brand" = await brand_id_validation(
+        brand_id=instance.brand_id,
         session=session,
     )
 
     # CHECKING RUBRICS_IDS VALIDATION
 
-    rubric_ids_set = set(rubric_ids)
-    rubrics_orm_models: List["Rubric"] = []
-    for rubric_id in rubric_ids_set:
-        rubric_orm_model: "Rubric" = await rubrics_deps_get_one(
-            id=rubric_id,
-            session=session,
-        )
-        rubrics_orm_models.append(rubric_orm_model)
+    rubrics_orm_models: List["Rubric"] = await rubric_ids_validation(
+        rubric_ids=rubric_ids,
+        session=session
+    )
 
     # CREATING PRODUCT IN DATABASE
 
     try:
         session.add(orm_model)
-
         for rubric_orm_model in rubrics_orm_models:
             orm_model.rubrics.append(rubric_orm_model)
-
         await session.commit()
         await session.refresh(orm_model)
-        logger.info(f"{CLASS} {orm_model!r} was successfully created")
 
-    except IntegrityError as error:
-        logger.error(f"Error {error!r} while {orm_model!r} creating")
+
+    except IntegrityError as exc:
+        if isinstance(exc.orig, UniqueViolationError):
+            logger.error(f"Unique constraint violation while creating {CLASS!r}: {exc!r}")
+            raise CustomException(
+                msg=f"Unique constraint violation: {exc.orig}",
+            )
+        else:
+            logger.error(f"General integrity error while creating {CLASS!r}: {exc!r}")
+            raise CustomException(
+                msg=f"Integrity error: {exc!r}",
+            )
+    except PendingRollbackError as exc:
+        logger.error(f"Pending rollback error while creating {CLASS!r}: {exc!r}")
         raise CustomException(
-            msg=f"{CLASS} {orm_model.title!r} already exists"
+            msg=f"Pending rollback error: {exc!r}",
         )
-    except Exception as error:
-        logger.error(f"Error {error!r} while {orm_model!r} creating")
-        raise error
+
+    logger.info(f"{CLASS} {orm_model!r} was successfully created")
 
     # WORKING WITH IMAGES
 
@@ -200,3 +205,90 @@ async def get_one_complex(
             msg=f"{CLASS} with {text_error} not found"
         )
     return orm_model
+
+
+async def edit_one(
+    orm_model: Product,
+    instance: Any,
+    image_schemas: List[UploadFile],
+    rubric_ids: List[int],
+    session: AsyncSession,
+    is_partial: bool = False
+) -> Product:
+
+    # CHECKING BRAND_ID VALIDATION
+
+    brand_orm_model: "Brand" = await brand_id_validation(
+        brand_id=instance.brand_id,
+        session=session,
+    )
+
+    # CHECKING RUBRICS_IDS VALIDATION
+
+    rubrics_orm_models: List["Rubric"] = await rubric_ids_validation(
+        rubric_ids=rubric_ids,
+        session=session
+    )
+
+    # EDITING PRODUCT IN DATABASE
+
+    for key, val in instance.model_dump(
+        exclude_unset=is_partial,
+        exclude_none=is_partial,
+    ).items():
+        setattr(orm_model, key, val)
+
+    logger.warning(f"Editing {orm_model!r} in database")
+
+    orm_model.rubrics.clear()
+    for rubric_orm_model in rubrics_orm_models:
+        orm_model.rubrics.append(rubric_orm_model)
+
+    try:
+        await session.commit()
+        await session.refresh(orm_model)
+    except IntegrityError as exc:
+        if isinstance(exc.orig, UniqueViolationError):
+            logger.error(f"Unique constraint violation while editing {CLASS!r}: {exc!r}")
+            raise CustomException(
+                msg=f"Unique constraint violation: {exc.orig}",
+            )
+        else:
+            logger.error(f"General integrity error while editing {CLASS!r}: {exc!r}")
+            raise CustomException(
+                msg=f"Integrity error: {exc!r}",
+            )
+    except PendingRollbackError as exc:
+        logger.error(f"Pending rollback error while editing {CLASS!r}: {exc!r}")
+        raise CustomException(
+            msg=f"Pending rollback error: {exc!r}",
+        )
+
+    logger.info(f"{CLASS} {orm_model!r} was successfully edited")
+    orm_model = await get_one_complex(id=orm_model.id, session=session)
+    return orm_model
+
+
+async def rubric_ids_validation(
+    rubric_ids: List[int],
+    session: AsyncSession,
+) -> List["Rubric"]:
+    rubric_ids_set = set(rubric_ids)
+    rubrics_orm_models: List["Rubric"] = []
+    for rubric_id in rubric_ids_set:
+        rubric_orm_model: "Rubric" = await rubrics_deps_get_one(
+            id=rubric_id,
+            session=session,
+        )
+        rubrics_orm_models.append(rubric_orm_model)
+    return rubrics_orm_models
+
+
+async def brand_id_validation(
+    session: AsyncSession,
+    brand_id: int
+) -> "Brand":
+    return await brands_deps_get_one(
+        id=brand_id,
+        session=session,
+    )

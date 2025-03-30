@@ -102,11 +102,6 @@ async def create_one(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=exc.msg,
         )
-    except Exception as exc:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=exc.msg if hasattr(exc, "msg") else str(exc)
-        )
 
 
 @router.get(
@@ -174,4 +169,55 @@ async def delete_one(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=exc.msg if hasattr(exc, "msg") else str(exc)
+        )
+
+
+@router.put(
+    "/{id}/",
+    dependencies=[Depends(current_superuser), ],
+    status_code=status.HTTP_200_OK,
+    response_model=ProductRead
+)
+async def edit_one(
+    title: str = Form(),
+    description: str = Form(),
+    brand_id: int = Form(),
+    # rubric_ids: List[int] = Form(),
+    rubric_ids: str = Form(...),
+    images: List[UploadFile] = File(),
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
+    orm_model: "Product" = Depends(deps.get_one_complex)
+):
+
+    # TEMPORARY FRAGMENT    #####################################
+    try:
+        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')]
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Parameter 'rubric_ids' must contains only integers, differed by comma"
+        )
+    ############################################################
+
+    # catching ValidationError in exception_handler
+    instance: ProductUpdate = ProductUpdate(
+        title=title,
+        description=description,
+        brand_id=brand_id,
+    )
+
+    try:
+        orm_model = await crud.edit_one(
+            orm_model=orm_model,
+            instance=instance,
+            image_schemas=images,
+            rubric_ids=rubric_ids,
+            session=session,
+        )
+        return await utils.get_schema_from_orm(orm_model=orm_model)
+
+    except CustomException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=exc.msg,
         )

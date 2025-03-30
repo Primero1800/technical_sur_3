@@ -31,7 +31,6 @@ async def get_all(
     listed_orm_models = await crud.get_all(
         session=session
     )
-    print('LLLLLLLLLLLLLLLISTTTED_OORRMM_MMMMODELLLLS ', listed_orm_models)
     result = []
     for orm_model in listed_orm_models:
         result.append(await utils.get_short_schema_from_orm(orm_model=orm_model))
@@ -50,7 +49,6 @@ async def get_all_full(
     listed_orm_models = await crud.get_all_full(
         session=session
     )
-    print('LISTED_ORM_MODELS ', listed_orm_models)
     result = []
     for orm_model in listed_orm_models:
         result.append(await utils.get_schema_from_orm(orm_model=orm_model))
@@ -88,7 +86,6 @@ async def create_one(
         title=title,
         description=description,
         brand_id=brand_id,
-        # rubric_ids=rubric_ids,
     )
 
     try:

@@ -168,7 +168,6 @@ async def create_one(
                 msg=f"Error {error!r} while {image!r} for {orm_model} creating."
             )
 
-    print("BEFORE GETTING FILNAL ONE ", orm_model)
     return await get_one_complex(
         id=orm_model.id,
         session=session,

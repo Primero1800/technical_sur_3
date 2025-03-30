@@ -67,9 +67,9 @@ async def delete_one(
         await session.delete(orm_model)
         await session.commit()
     except IntegrityError as exc:
-        logger.error(f"Error while deleting {orm_model!r} from database: {exc!r}")
+        logger.error(f"Error while deleting {CLASS!r} from database: {exc!r}")
         raise CustomException(
-            msg=f"Error while deleting {orm_model!r} from database: {exc!r}"
+            msg=f"Error while deleting {CLASS!r} from database: {exc!r}"
         )
 
 
@@ -217,18 +217,18 @@ async def edit_one(
 ) -> Product:
 
     # CHECKING BRAND_ID VALIDATION
-
-    brand_orm_model: "Brand" = await brand_id_validation(
-        brand_id=instance.brand_id,
-        session=session,
-    )
+    if  instance.brand_id or instance.brand_id == 0:
+        brand_orm_model: "Brand" = await brand_id_validation(
+            brand_id=instance.brand_id,
+            session=session,
+        )
 
     # CHECKING RUBRICS_IDS VALIDATION
-
-    rubrics_orm_models: List["Rubric"] = await rubric_ids_validation(
-        rubric_ids=rubric_ids,
-        session=session
-    )
+    if rubric_ids:
+        rubrics_orm_models: List["Rubric"] = await rubric_ids_validation(
+            rubric_ids=rubric_ids,
+            session=session
+        )
 
     # EDITING PRODUCT IN DATABASE
 
@@ -240,31 +240,81 @@ async def edit_one(
 
     logger.warning(f"Editing {orm_model!r} in database")
 
-    orm_model.rubrics.clear()
-    for rubric_orm_model in rubrics_orm_models:
-        orm_model.rubrics.append(rubric_orm_model)
+    if rubric_ids:
+        orm_model.rubrics.clear()
+        for rubric_orm_model in rubrics_orm_models:
+            orm_model.rubrics.append(rubric_orm_model)
 
-    try:
-        await session.commit()
+        try:
+            await session.commit()
+            await session.refresh(orm_model)
+        except IntegrityError as exc:
+            if isinstance(exc.orig, UniqueViolationError):
+                logger.error(f"Unique constraint violation while editing {CLASS!r}: {exc!r}")
+                raise CustomException(
+                    msg=f"Unique constraint violation: {exc.orig}",
+                )
+            else:
+                logger.error(f"General integrity error while editing {CLASS!r}: {exc!r}")
+                raise CustomException(
+                    msg=f"Integrity error: {exc!r}",
+                )
+        except PendingRollbackError as exc:
+            logger.error(f"Pending rollback error while editing {CLASS!r}: {exc!r}")
+            raise CustomException(
+                msg=f"Pending rollback error: {exc!r}",
+            )
+        logger.info(f"{CLASS} {orm_model!r} was successfully edited")
+
+    # WORKING WITH IMAGES
+
+    if image_schemas:
+        folder: str = f"{orm_model.id}"
+        path: str = f"app1/media/{_CLASS}s"
+        file_pathes: list = []
+        old_images_ids: list = [image.id for image in orm_model.images]
+
+        for index, image_schema in enumerate(image_schemas):
+            try:
+                file_path: str = await save_image(
+                    image_object=image_schema,
+                    path=path,
+                    folder=folder,
+                    cleaning=False,
+                    name=f"pic_{index}",
+                )
+                file_pathes.append(file_path)
+
+            except Exception as error:
+                logger.error(f"Error wile writing file {file_path!r}")
+                raise CustomException(
+                    msg=f"Error {error!r} while {image!r} for {orm_model} editing."
+                )
+
+            logger.info(f"Image {image_schema!r} was successfully written")
+
+            try:
+                image: ProductImage | None = ProductImage(file=file_path, product_id=orm_model.id)
+                session.add(image)
+                await session.commit()
+                logger.info(f"{CLASS}Image {image!r} was successfully edited")
+            except IntegrityError as error:
+                logger.error(f"Error while adding image: {error!r}")
+                raise CustomException(
+                    msg=f"Error while adding image: {error!r}"
+                )
+
+        logger.warning(f"Images was successfully added, while {orm_model} editing. Old images will be deleted from database.")
+
+        # DELETING ALL PICTURES FROM DATABASE
+
+        for old_image_id in old_images_ids:
+            await delete_picture(
+                session=session,
+                id=old_image_id,
+            )
         await session.refresh(orm_model)
-    except IntegrityError as exc:
-        if isinstance(exc.orig, UniqueViolationError):
-            logger.error(f"Unique constraint violation while editing {CLASS!r}: {exc!r}")
-            raise CustomException(
-                msg=f"Unique constraint violation: {exc.orig}",
-            )
-        else:
-            logger.error(f"General integrity error while editing {CLASS!r}: {exc!r}")
-            raise CustomException(
-                msg=f"Integrity error: {exc!r}",
-            )
-    except PendingRollbackError as exc:
-        logger.error(f"Pending rollback error while editing {CLASS!r}: {exc!r}")
-        raise CustomException(
-            msg=f"Pending rollback error: {exc!r}",
-        )
 
-    logger.info(f"{CLASS} {orm_model!r} was successfully edited")
     orm_model = await get_one_complex(id=orm_model.id, session=session)
     return orm_model
 
@@ -291,4 +341,19 @@ async def brand_id_validation(
     return await brands_deps_get_one(
         id=brand_id,
         session=session,
+    )
+
+
+async def delete_picture(
+    session: AsyncSession,
+    id: int,
+):
+    try:
+        old_image: ProductImage | None = await session.get(ProductImage, id)
+        await session.delete(old_image)
+        await session.commit()
+    except IntegrityError as exc:
+        logger.error(f"Error while deleting {CLASS!r} from database: {exc!r}")
+        raise CustomException(
+            msg=f"Error while deleting {CLASS!r} from database: {exc!r}"
     )

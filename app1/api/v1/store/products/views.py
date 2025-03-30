@@ -73,7 +73,7 @@ async def create_one(
 
     # TEMPORARY FRAGMENT    #####################################
     try:
-        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')]
+        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')] if rubric_ids else []
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -182,7 +182,6 @@ async def edit_one(
     title: str = Form(),
     description: str = Form(),
     brand_id: int = Form(),
-    # rubric_ids: List[int] = Form(),
     rubric_ids: str = Form(...),
     images: List[UploadFile] = File(),
     session: AsyncSession = Depends(DBConfigurer.session_getter),
@@ -191,7 +190,7 @@ async def edit_one(
 
     # TEMPORARY FRAGMENT    #####################################
     try:
-        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')]
+        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')] if rubric_ids else []
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -213,6 +212,57 @@ async def edit_one(
             image_schemas=images,
             rubric_ids=rubric_ids,
             session=session,
+        )
+        return await utils.get_schema_from_orm(orm_model=orm_model)
+
+    except CustomException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=exc.msg,
+        )
+
+
+@router.patch(
+    "/{id}/",
+    dependencies=[Depends(current_superuser), ],
+    status_code=status.HTTP_200_OK,
+    response_model=ProductRead
+)
+async def edit_one(
+    title: Optional[str] = Form(default=None),
+    description: Optional[str] = Form(default=None),
+    brand_id: Optional[int] = Form(default=None),
+    rubric_ids: Optional[str] = Form(default=None),
+    images: Optional[List[UploadFile]] = None,
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
+    orm_model: "Product" = Depends(deps.get_one_complex)
+):
+
+    # TEMPORARY FRAGMENT    #####################################
+    try:
+        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')] if rubric_ids else []
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Parameter 'rubric_ids' must contains only integers, differed by comma"
+        )
+    ############################################################
+
+    # catching ValidationError in exception_handler
+    instance: ProductPartialUpdate = ProductPartialUpdate(
+        title=title,
+        description=description,
+        brand_id=brand_id,
+    )
+
+    try:
+        orm_model = await crud.edit_one(
+            orm_model=orm_model,
+            instance=instance,
+            image_schemas=images,
+            rubric_ids=rubric_ids,
+            session=session,
+            is_partial=True,
         )
         return await utils.get_schema_from_orm(orm_model=orm_model)
 

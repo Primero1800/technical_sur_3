@@ -22,7 +22,6 @@ class BaseProduct(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     title: base_title_field
-
     brand_id: int
 
 
@@ -44,10 +43,9 @@ class ProductRead(ProductShort):
 
 class ProductUpdate(BaseProduct, TitleSlugMixin):
     description: base_description_field
-    pass
 
 
 class ProductPartialUpdate(BaseProduct, TitleSlugMixin):
     title: Optional[base_title_field] = None
     description: Optional[base_description_field] = None
-    pass
+    brand_id: Optional[int] = None

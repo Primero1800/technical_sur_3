@@ -16,11 +16,16 @@ logger = logging.getLogger(__name__)
 
 
 class ExceptionHandlerConfigurer:
-    # TODO
+
+    simple_exceptions = [
+        ValidationError,
+        RequestValidationError,
+    ]
+
     @staticmethod
-    def config_exception_handler(app: FastAPI):
-        @app.exception_handler(ValidationError)
-        async def validation_error_exception_handler(request, exc: ValidationError):
+    def add_simple_exception_handler(exc_class, app:FastAPI):
+        @app.exception_handler(exc_class)
+        async def simple_exception_handler(request, exc: exc_class):
             exc_argument = exc.errors() if hasattr(exc, "errors") else exc
             return ORJSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -30,16 +35,14 @@ class ExceptionHandlerConfigurer:
                 }
             )
 
-        @app.exception_handler(RequestValidationError)
-        async def validation_exception_handler(request, exc: RequestValidationError):
-            logger.error("Handled by ExceptionHandler", exc_info=exc)
-            exc_argument = exc.errors() if hasattr(exc, "errors") else exc
-            return ORJSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content={
-                    "message": "Handled by ExceptionHandler",
-                    "detail": jsonable_encoder(exc_argument),
-                }
+    # TODO
+    @staticmethod
+    def config_exception_handler(app: FastAPI):
+
+        for simple_exception in ExceptionHandlerConfigurer.simple_exceptions:
+            ExceptionHandlerConfigurer.add_simple_exception_handler(
+                exc_class=simple_exception,
+                app=app
             )
 
         @app.exception_handler(IntegrityError)

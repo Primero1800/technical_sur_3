@@ -6,7 +6,10 @@ from fastapi import FastAPI, BackgroundTasks
 from starlette import status
 
 from app1.core.config import (
-    AppConfigurer, SwaggerConfigurer, DBConfigurer
+    AppConfigurer,
+    SwaggerConfigurer,
+    DBConfigurer,
+    ExceptionHandlerConfigurer,
 )
 from app1.core.settings import settings
 from app1.api import (
@@ -65,7 +68,7 @@ add_metrics_root(
 SwaggerConfigurer.delete_router_tag(app)
 
 # uncomment, if need custom exception_handler
-AppConfigurer.config_validation_exception_handler(app)
+ExceptionHandlerConfigurer.config_exception_handler(app)
 
 # ROUTES
 

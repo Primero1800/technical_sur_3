@@ -22,10 +22,12 @@ class BaseCustomSettings(BaseSettings):
 
     @classmethod
     def set_app_name_as_source(cls, app_names: Sequence[str]):
+
         env_files = list(cls.model_config["env_file"])
+
         for app_name in app_names:
-            env_files.append(BASE_DIR / f'{app_name}/.env.{app_name}.template')
-            env_files.append(BASE_DIR / f'{app_name}/.env.{app_name}')
+            env_files.append(BASE_DIR / f'{app_name}/.env.template')
+            env_files.append(BASE_DIR / f'{app_name}/.env')
 
         cls.model_config["env_file"] = (
             *env_files,

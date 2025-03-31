@@ -72,13 +72,7 @@ async def create_one(
 ) -> ProductRead:
 
     # TEMPORARY FRAGMENT    #####################################
-    try:
-        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')] if rubric_ids else []
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Parameter 'rubric_ids' must contains only integers, differed by comma"
-        )
+    rubric_ids = await temporary_fragment(ids=rubric_ids)
     ############################################################
 
     # catching ValidationError in exception_handler
@@ -189,13 +183,7 @@ async def edit_one(
 ):
 
     # TEMPORARY FRAGMENT    #####################################
-    try:
-        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')] if rubric_ids else []
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Parameter 'rubric_ids' must contains only integers, differed by comma"
-        )
+    rubric_ids = await temporary_fragment(ids=rubric_ids)
     ############################################################
 
     # catching ValidationError in exception_handler
@@ -239,13 +227,7 @@ async def edit_one(
 ):
 
     # TEMPORARY FRAGMENT    #####################################
-    try:
-        rubric_ids = [int(el.strip()) for el in rubric_ids.split(',')] if rubric_ids else []
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Parameter 'rubric_ids' must contains only integers, differed by comma"
-        )
+    rubric_ids = await temporary_fragment(ids=rubric_ids)
     ############################################################
 
     # catching ValidationError in exception_handler
@@ -270,4 +252,14 @@ async def edit_one(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=exc.msg,
+        )
+
+
+async def temporary_fragment(ids: str):
+    try:
+        return [int(el.strip()) for el in ids.split(',')] if ids else []
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Parameter 'rubric_ids' must contains only integers, differed by comma"
         )

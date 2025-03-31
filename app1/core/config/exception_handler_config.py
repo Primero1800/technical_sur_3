@@ -1,10 +1,16 @@
+import logging
+
 from fastapi import FastAPI, HTTPException, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import ORJSONResponse
 from pydantic import ValidationError
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DatabaseError
 
 from app1.core import errors
 from app1.exceptions import CustomException
+
+
+logger = logging.getLogger(__name__)
 
 
 class ExceptionHandlerConfigurer:
@@ -14,9 +20,12 @@ class ExceptionHandlerConfigurer:
         @app.exception_handler(ValidationError)
         async def validation_error_exception_handler(request, exc: ValidationError):
             exc_argument = exc.errors() if hasattr(exc, "errors") else exc
-            raise HTTPException(
+            return ORJSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=jsonable_encoder(exc_argument)
+                content={
+                    "message": "Handled by ExceptionHandler",
+                    "detail": jsonable_encoder(exc_argument)
+                }
             )
 
         # @app.exception_handler(RequestValidationError)
@@ -28,6 +37,7 @@ class ExceptionHandlerConfigurer:
 
         @app.exception_handler(IntegrityError)
         async def integrity_error_exception_handler(request, exc: IntegrityError):
+            logger.error("Handled by ExceptionHandler", exc_info=exc)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"{errors.get_message(exc)} - HHHHHHHHHHHHHHHHHHHHAAAAAAAAAAAAAANNNNNNNNNNNNDDDDDDDDDDLLLLLLLLLEEEEEEEEER",
@@ -35,14 +45,21 @@ class ExceptionHandlerConfigurer:
 
         @app.exception_handler(CustomException)
         async def integrity_error_exception_handler(request, exc: CustomException):
-            raise HTTPException(
+            return ORJSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"{exc.msg} (catched by exception_handler)",
+                content={
+                    "message": "Handled by ExceptionHandler",
+                    "detail": f"{exc.msg} (catched by exception_handler)",
+                }
             )
 
-        # @app.exception_handler(errors.Missing)
-        # async def missing_exception_handler(request, exc: errors.Missing):
-        #     raise HTTPException(
-        #         status_code=status.HTTP_404_NOT_FOUND,
-        #         detail=exc.msg
-        #     )
+        @app.exception_handler(DatabaseError)
+        async def database_error_handler(request, exc: DatabaseError):
+            logger.error("Handled by ExceptionHandler", exc_info=exc)
+            return ORJSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content={
+                    "message": "Handled by ExceptionHandler",
+                    "detail": "Unexpected error occurred."
+                }
+            )

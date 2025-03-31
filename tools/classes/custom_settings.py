@@ -1,13 +1,32 @@
+from pathlib import Path
+from typing import Sequence
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+#  export PYTHONPATH="/home/primero/Python/python_codes/fastapi/3_sur"          in activate
+# /home/primero/Python/python_codes/fastapi/3_sur
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-class CustomSettings(BaseSettings):
+
+class BaseCustomSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
-            '.env.app1.template', '.env.app1', 'app1/.env.app1.template', 'app1/.env.app1',
+            BASE_DIR / '.env.template',
+            BASE_DIR / '.env',
         ),
         case_sensitive=False,
         extra='allow',
         env_prefix='',
         env_nested_delimiter='',
     )
+
+    @classmethod
+    def set_app_name_as_source(cls, app_names: Sequence[str]):
+        env_files = list(cls.model_config["env_file"])
+        for app_name in app_names:
+            env_files.append(BASE_DIR / f'{app_name}/.env.{app_name}.template')
+            env_files.append(BASE_DIR / f'{app_name}/.env.{app_name}')
+
+        cls.model_config["env_file"] = (
+            *env_files,
+        )

@@ -1,5 +1,5 @@
 __all__ = (
-    "CustomSettings",
+    "BaseCustomSettings",
 )
 
-from .custom_settings import CustomSettings
+from .custom_settings import BaseCustomSettings

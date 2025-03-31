@@ -1,4 +1,13 @@
-from tools.classes import CustomSettings
+from tools.classes import BaseCustomSettings
+
+
+class CustomSettings(BaseCustomSettings):
+    pass
+
+
+CustomSettings.set_app_name_as_source(
+    ("celery", "app1",)
+)
 
 
 class CeleryCustom(CustomSettings):

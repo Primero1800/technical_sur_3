@@ -6,7 +6,16 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from tools.classes import CustomSettings
+from tools.classes import BaseCustomSettings
+
+
+class CustomSettings(BaseCustomSettings):
+    pass
+
+
+CustomSettings.set_app_name_as_source(
+    ('app1',)
+)
 
 
 class AppRunConfig(CustomSettings):
@@ -52,6 +61,7 @@ class LoggingConfig(CustomSettings):
 
 
 class AppSettings(CustomSettings):
+    # /home/primero/Python/python_codes/fastapi/3_sur/app1
     APP_BASE_DIR: str = str(Path(__file__).resolve().parent.parent)
     APP_TITLE: str
     APP_VERSION: str

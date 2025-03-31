@@ -245,26 +245,26 @@ async def edit_one(
         for rubric_orm_model in rubrics_orm_models:
             orm_model.rubrics.append(rubric_orm_model)
 
-        try:
-            await session.commit()
-            await session.refresh(orm_model)
-        except IntegrityError as exc:
-            if isinstance(exc.orig, UniqueViolationError):
-                logger.error(f"Unique constraint violation while editing {CLASS!r}: {exc!r}")
-                raise CustomException(
-                    msg=f"Unique constraint violation: {exc.orig}",
-                )
-            else:
-                logger.error(f"General integrity error while editing {CLASS!r}: {exc!r}")
-                raise CustomException(
-                    msg=f"Integrity error: {exc!r}",
-                )
-        except PendingRollbackError as exc:
-            logger.error(f"Pending rollback error while editing {CLASS!r}: {exc!r}")
+    try:
+        await session.commit()
+        await session.refresh(orm_model)
+    except IntegrityError as exc:
+        if isinstance(exc.orig, UniqueViolationError):
+            logger.error(f"Unique constraint violation while editing {CLASS!r}: {exc!r}")
             raise CustomException(
-                msg=f"Pending rollback error: {exc!r}",
+                msg=f"Unique constraint violation: {exc.orig}",
             )
-        logger.info(f"{CLASS} {orm_model!r} was successfully edited")
+        else:
+            logger.error(f"General integrity error while editing {CLASS!r}: {exc!r}")
+            raise CustomException(
+                msg=f"Integrity error: {exc!r}",
+            )
+    except PendingRollbackError as exc:
+        logger.error(f"Pending rollback error while editing {CLASS!r}: {exc!r}")
+        raise CustomException(
+            msg=f"Pending rollback error: {exc!r}",
+        )
+    logger.info(f"{CLASS} {orm_model!r} was successfully edited")
 
     # WORKING WITH IMAGES
 

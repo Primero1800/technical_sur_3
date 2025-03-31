@@ -10,6 +10,8 @@ from app1.api.v1.celery_tasks import router as celery_router
 from app1.api.v1.store import router as store_router
 
 from app1.api.v1.webhooks import router as webhooks_router
+from app1.api.v1.technical import router as technical_router
+
 
 http_bearer = HTTPBearer(
     auto_error=False
@@ -51,4 +53,9 @@ router.include_router(
 
 router.include_router(
     store_router,
+)
+
+router.include_router(
+    technical_router,
+    tags=[settings.tags.TECH_TAG]
 )

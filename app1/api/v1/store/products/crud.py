@@ -107,7 +107,6 @@ async def create_one(
         await session.commit()
         await session.refresh(orm_model)
 
-
     except IntegrityError as exc:
         if isinstance(exc.orig, UniqueViolationError):
             logger.error(f"Unique constraint violation while creating {CLASS!r}: {exc!r}")

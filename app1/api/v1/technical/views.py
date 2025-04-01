@@ -1,10 +1,18 @@
-from fastapi import APIRouter, Depends
+import logging
+from typing import Dict, List
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app1.core.auth.fastapi_users_config import current_superuser
 from app1.core.config import DBConfigurer
+from app1.exceptions import CustomException
 
 from . import crud
+
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter()
@@ -21,13 +29,51 @@ async def export_data(
     return data
 
 
-#     async with session.begin():
-#         # Получение данных из всех моделей
-#         for model in [YourModel1, YourModel2]:  # Замените на ваши модели
-#             results = await session.execute(select(model))
-#             data[model.__name__] = [result._asdict() for result in results.scalars()]
-#
-#     return data
+@router.get("/export_data", dependencies=[Depends(current_superuser)])
+async def export_data(
+    session: AsyncSession = Depends(DBConfigurer.session_getter)
+):
+    try:
+        result = await crud.get_all_data_and_write_to_json(
+            session=session
+        )
+        if result:
+            return {"status": "Data was successfully exported to json"}
+    except CustomException as exc:
+        return ORJSONResponse(
+            status_code=exc.status_code,
+            content={
+                "message": "Handled by Endpoint ExceptionHandler",
+                "detail": exc.msg,
+            }
+        )
+
+
+@router.post(
+    "/import_data",
+    dependencies=[Depends(current_superuser)]
+)
+async def import_data(
+        data: Dict[str, List[Dict]],
+        session: AsyncSession = Depends(DBConfigurer.session_getter)
+):
+
+    try:
+        return await crud.import_data_from_json(
+            data=data,
+            session=session,
+        )
+    except CustomException as exc:
+        return ORJSONResponse(
+            status_code=exc.status_code,
+            content={
+                "message": "Handled by Endpoint ExceptionHandler",
+                "detail": {exc.msg},
+            }
+        )
+
+
+
 #
 #
 # # Эндпоинт для загрузки данных из JSON в БД

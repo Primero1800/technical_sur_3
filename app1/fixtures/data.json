@@ -1,0 +1,474 @@
+{
+    "User": [
+        {
+            "display_name": "Noname",
+            "id": 1,
+            "email": "user@example.com",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$h6q/SF+lelqYcrdkjKImDg$TcRzOsdQocohAH6PxmJ4tsknHZ9BCeQQnj0OUDyGn6M",
+            "is_active": true,
+            "is_superuser": false,
+            "is_verified": false
+        },
+        {
+            "display_name": "Noname",
+            "id": 17,
+            "email": "primero@inbox.ru",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$dGVcj5+VgwWZmM06pbXsaw$Z3w8U4F+FFtBDoCHbPpi04CQdPUabAa4B1CSH75Bil0",
+            "is_active": true,
+            "is_superuser": false,
+            "is_verified": true
+        },
+        {
+            "display_name": "Noname",
+            "id": 99,
+            "email": "user15@example.com",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$N7kkWuYW2T0g7z0QcFcOtw$xp1IxuUIqni95cgnYOfee4tmFLQ74l4HjImPanXGE6M",
+            "is_active": true,
+            "is_superuser": false,
+            "is_verified": false
+        },
+        {
+            "display_name": "Noname",
+            "id": 41,
+            "email": "userhook@example.com",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$zkJDF/3dYpBuUwtnrzZI+A$In5IHZvBVWNxWVdIA52oaYtTMu1z22UsGSwwuNMgsfo",
+            "is_active": true,
+            "is_superuser": false,
+            "is_verified": false
+        },
+        {
+            "display_name": "Noname",
+            "id": 100,
+            "email": "user16@example.com",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$ij3ApHmIDSq75hIOkWYIvQ$v5F62hcgR6PpysqlRoj8DuGalaUa2aqLcF+KOx3fE1U",
+            "is_active": true,
+            "is_superuser": false,
+            "is_verified": false
+        },
+        {
+            "display_name": "Noname",
+            "id": 102,
+            "email": "admin@primero1800.store",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$tfAQaqzSayIPTcfc4PgK3Q$v8gCXqk7wHPCRV78cbIOm/d2lli06q5olzt36YBmGC0",
+            "is_active": true,
+            "is_superuser": false,
+            "is_verified": false
+        },
+        {
+            "display_name": "Noname",
+            "id": 104,
+            "email": "admin@admin.com",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$guKFYlZTlZ5mEFmNTtsBAA$A8phsuD95LxUFG1svRBWac9xxcjE/YgXWUgNK5ohCP4",
+            "is_active": true,
+            "is_superuser": true,
+            "is_verified": true
+        },
+        {
+            "display_name": "Noname",
+            "id": 105,
+            "email": "user22@example.com",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$xyiC5XjyTCw2p8BS/WT2kA$KqqQRoZqEzkkNfK2qAYpZ3hLvJfJ5qheI2jzYMgyn44",
+            "is_active": true,
+            "is_superuser": false,
+            "is_verified": false
+        },
+        {
+            "display_name": "Noname",
+            "id": 106,
+            "email": "user23@example.com",
+            "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$tvCP+9/Os/ySPzmyPcgIhw$mz6d7ES+w0q8zBqYxa2DMXeXFvr6jPLULGtMV8NUei0",
+            "is_active": true,
+            "is_superuser": false,
+            "is_verified": false
+        }
+    ],
+    "AccessToken": [
+        {
+            "user_id": 104,
+            "token": "6pI2AnEMUMj3nKvCR-w20ztJqXsRXgKDQyKCp26PmAA",
+            "created_at": "2025-03-31T13:16:04.458637+00:00"
+        },
+        {
+            "user_id": 104,
+            "token": "sVI00L1pGVz_POLE4pTSu3gyDAFJj--IkQHc18-rlG4",
+            "created_at": "2025-03-31T13:59:43.462501+00:00"
+        },
+        {
+            "user_id": 104,
+            "token": "b3NsOsMJfnSB2LBnHI_SwUb13awo7zWNegEnmhw1ZXE",
+            "created_at": "2025-04-01T08:14:49.290637+00:00"
+        },
+        {
+            "user_id": 104,
+            "token": "gwHLUOeHFNTvPo12mcvd8KmMWMCJ51ucjgAJnKmDyK4",
+            "created_at": "2025-03-31T13:54:02.255532+00:00"
+        },
+        {
+            "user_id": 104,
+            "token": "kK1fJlehFa_Syu4j8XeLtWee9W2Cu6Gdh7KJsjw3qJE",
+            "created_at": "2025-04-01T07:29:45.819597+00:00"
+        }
+    ],
+    "Product": [
+        {
+            "slug": "test",
+            "brand_id": 4,
+            "id": 4,
+            "title": "Test",
+            "description": "Тестовый продукт для бд"
+        },
+        {
+            "slug": "test3",
+            "brand_id": 2,
+            "id": 6,
+            "title": "Test3",
+            "description": "stringddd gggggg hhhh "
+        },
+        {
+            "slug": "test4",
+            "brand_id": 5,
+            "id": 8,
+            "title": "Test4",
+            "description": "string dfsdfsd"
+        },
+        {
+            "slug": "test-ff",
+            "brand_id": 4,
+            "id": 9,
+            "title": "Test_ff",
+            "description": "string df sd "
+        },
+        {
+            "slug": "produkt-bez-paitonpasa",
+            "brand_id": 10,
+            "id": 10,
+            "title": "Продукт без пайтонпаса",
+            "description": "Тестовый продукт, добавляется в бд после удаления пайтонпаса из venv/bin/activate"
+        }
+    ],
+    "Brand": [
+        {
+            "slug": "apple",
+            "id": 1,
+            "title": "Apple",
+            "description": "Американская корпорация, разработчик персональных и планшетных компьютеров, аудиоплееров, смартфонов, программного обеспечения и цифрового контента. Штаб-квартира расположена в Купертино, штат Калифорния. Практически вся продукция Apple выпускается контрактными производителями на заводах в Азии. Один из пионеров в области персональных компьютеров и современных многозадачных операционных систем с графическим интерфейсом. Более половины продаж компании приходится на iPhone."
+        },
+        {
+            "slug": "asus",
+            "id": 2,
+            "title": "Asus",
+            "description": "Расположенная на Тайване компания, производящая разнообразную компьютерную технику (как комплектующие, так и готовые продукты). Название торговой марки Asus происходит от слова Pegasus (Пегас). Полное наименование компании — ASUSTeK Computer Inc."
+        },
+        {
+            "slug": "bosch",
+            "id": 3,
+            "title": "Bosch",
+            "description": "Немецкая транснациональная инженерная и технологическая компания. Штаб-квартира находится в Герлингене, недалеко от Штутгарта, Германия.  Основные направления деятельности Bosch: автомобильные технологии (оборудование и программное обеспечение), потребительские товары (бытовая техника и электроинструменты), промышленные технологии (электроприводы и системы управления),  энергетика и строительные технологии."
+        },
+        {
+            "slug": "huawei",
+            "id": 4,
+            "title": "Huawei",
+            "description": "Китайская компания, одна из крупнейших мировых компаний в сфере телекоммуникаций. и мировой лидер в производстве телекоммуникационного оборудования."
+        },
+        {
+            "slug": "lenovo",
+            "id": 5,
+            "title": "Lenovo",
+            "description": "Китайская транснациональная корпорация, выпускающая персональные компьютеры, ноутбуки, смартфоны, ряд другой электроники, а также клавиатуры, компьютерные мыши, колонки, наушники, защитные чехлы и иные аксессуары к ней. Является крупнейшим производителем персональных компьютеров в мире с долей на рынке более 20%, а также занимает пятое место по производству мобильных телефонов. Штаб-квартира компании Lenovo расположена в Пекине (КНР), а зарегистрирована компания в Гонконге."
+        },
+        {
+            "slug": "panasonic",
+            "id": 6,
+            "title": "Panasonic",
+            "description": "Крупная японская машиностроительная корпорация, один из крупнейших в мире производителей бытовой техники и электронных товаров. Штаб-квартира — в городе Кадома префектуры Осака (Япония). Входит в десятку крупнейших в мире производителей литий-ионных аккумуляторов."
+        },
+        {
+            "slug": "siemens",
+            "id": 7,
+            "title": "Siemens",
+            "description": "Немецкий конгломерат, работающий в области электротехники, электроники, энергетического оборудования, транспорта, медицинского оборудования и светотехники, а также специализированных услуг в различных областях промышленности, транспорта и связи. Штаб-квартира находится в Мюнхене."
+        },
+        {
+            "slug": "sony",
+            "id": 8,
+            "title": "Sony",
+            "description": "Японский транснациональный конгломерат со штаб-квартирой в Токио. В группу компаний Sony входят: Sony Corporation, производящая потребительскую и профессиональную электронику, музыкальные и развлекательные компании Sony Music Entertainment (Columbia Records) и Sony Music Entertainment Japan (Aniplex), кинокомпания Sony Pictures (Columbia Pictures, Sony Pictures Television и Crunchyroll) и видеоигровая и развлекательная компания Sony Interactive Entertainment (PlayStation Studios)."
+        },
+        {
+            "slug": "xiaomi",
+            "id": 9,
+            "title": "Xiaomi",
+            "description": "Китайская корпорация, основанная в 2010 году. Разрабатывает и продаёт бытовую электронику: смартфоны (в 2021 году стала лидером по объёму их продаж), смарт-телевизоры, планшеты, смарт-часы, а также бытовую технику, электросамокаты, электровелосипеды и многое другое. Является разработчиком прошивки для смартфонов и другой электроники MIUI, в настоящее время известной как HyperOS, а также различных приложений и среды для интернета вещей."
+        },
+        {
+            "slug": "samsung",
+            "id": 10,
+            "title": "Samsung",
+            "description": "Южнокорейская группа компаний, один из крупнейших чеболей, основанный в 1938 году. Samsung Group владеет долей в наиболее известной компании группы — публичной компании Samsung Electronics, известной как производитель смартфонов, интегральных микросхем, телекоммуникационного оборудования, бытовой техники, аудио- и видео устройств. Также имеется одноименная сеть магазинов по продаже одноимённой электроники."
+        },
+        {
+            "slug": "lg-inc",
+            "id": 11,
+            "title": "LG inc",
+            "description": "LG Electronics Inc. — южнокорейская компания, один из крупнейших мировых производителей потребительской электроники и бытовой техники. Входит в состав конгломерата LG Group. Главный офис компании LG Electronics находится в Сеуле, Республика Корея, 120 представительств компании открыты в 95 странах мира. По состоянию на 2010 год сотрудниками компании являлись 90 578 человек. Общий оборот компании по состоянию на 2010 составил 48,2 млрд долларов."
+        }
+    ],
+    "BrandImage": [
+        {
+            "brand_id": 1,
+            "file": "app1/media/brands/1_Apple/logo.png",
+            "id": 1
+        },
+        {
+            "brand_id": 2,
+            "file": "app1/media/brands/2_Asus/logo.jpeg",
+            "id": 2
+        },
+        {
+            "brand_id": 3,
+            "file": "app1/media/brands/3_Bosch/logo.png",
+            "id": 3
+        },
+        {
+            "brand_id": 4,
+            "file": "app1/media/brands/4_Huawei/logo.jpeg",
+            "id": 4
+        },
+        {
+            "brand_id": 5,
+            "file": "app1/media/brands/5_Lenovo/logo.png",
+            "id": 5
+        },
+        {
+            "brand_id": 6,
+            "file": "app1/media/brands/6_Panasonic/logo.png",
+            "id": 6
+        },
+        {
+            "brand_id": 7,
+            "file": "app1/media/brands/7_Siemens/logo.png",
+            "id": 7
+        },
+        {
+            "brand_id": 8,
+            "file": "app1/media/brands/8_Sony/logo.png",
+            "id": 8
+        },
+        {
+            "brand_id": 9,
+            "file": "app1/media/brands/9_Xiaomi/logo.png",
+            "id": 9
+        },
+        {
+            "brand_id": 10,
+            "file": "app1/media/brands/10_Samsung/logo.png",
+            "id": 10
+        },
+        {
+            "brand_id": 11,
+            "file": "app1/media/brands/11_LG inc/logo.png",
+            "id": 11
+        }
+    ],
+    "ProductImage": [
+        {
+            "product_id": 4,
+            "file": "app1/media/products/4/pic_0.png",
+            "id": 1
+        },
+        {
+            "product_id": 4,
+            "file": "app1/media/products/4/pic_1.png",
+            "id": 2
+        },
+        {
+            "product_id": 4,
+            "file": "app1/media/products/4/pic_2.png",
+            "id": 3
+        },
+        {
+            "product_id": 4,
+            "file": "app1/media/products/4/pic_3.png",
+            "id": 4
+        },
+        {
+            "product_id": 6,
+            "file": "app1/media/products/6/pic_0.png",
+            "id": 7
+        },
+        {
+            "product_id": 6,
+            "file": "app1/media/products/6/pic_1.png",
+            "id": 8
+        },
+        {
+            "product_id": 8,
+            "file": "app1/media/products/8/pic_0.png",
+            "id": 9
+        },
+        {
+            "product_id": 8,
+            "file": "app1/media/products/8/pic_1.jpeg",
+            "id": 10
+        },
+        {
+            "product_id": 9,
+            "file": "app1/media/products/9/pic_0.png",
+            "id": 43
+        },
+        {
+            "product_id": 10,
+            "file": "app1/media/products/10/pic_0.png",
+            "id": 44
+        },
+        {
+            "product_id": 10,
+            "file": "app1/media/products/10/pic_1.jpeg",
+            "id": 45
+        },
+        {
+            "product_id": 10,
+            "file": "app1/media/products/10/pic_2.png",
+            "id": 46
+        }
+    ],
+    "Rubric": [
+        {
+            "slug": "noutbukiii",
+            "id": 1,
+            "title": "Ноутбукиии",
+            "description": "44444444444444"
+        },
+        {
+            "slug": "geiming",
+            "id": 2,
+            "title": "Гейминг",
+            "description": "Устройства, станции, консоли и принадлежности для развлечения и игр"
+        },
+        {
+            "slug": "telefony-i-planshety",
+            "id": 3,
+            "title": "Телефоны и планшеты",
+            "description": "Телефоны и планшеты различных мировых производителей"
+        },
+        {
+            "slug": "televizory-i-televidenie",
+            "id": 4,
+            "title": "Телевизоры и телевидение",
+            "description": "Устройства и детали для просмотра телепередач и программ."
+        },
+        {
+            "slug": "zariadnye-ustroistva",
+            "id": 5,
+            "title": "Зарядные устройства",
+            "description": "Внешние аккумуляторы, портативные зарядные устройства."
+        },
+        {
+            "slug": "aksessuary",
+            "id": 6,
+            "title": "Аксессуары",
+            "description": "Аксессуары для телефонов, планшетов и прочая электроника и устройства"
+        },
+        {
+            "slug": "bytovaia-tekhnika",
+            "id": 7,
+            "title": "Бытовая техника",
+            "description": "Различные устройства для дома и офиса."
+        }
+    ],
+    "RubricImage": [
+        {
+            "rubric_id": 1,
+            "file": "app1/media/rubrics/1_noutbuki/logo.png",
+            "id": 1
+        },
+        {
+            "rubric_id": 2,
+            "file": "app1/media/rubrics/2/logo.png",
+            "id": 2
+        },
+        {
+            "rubric_id": 3,
+            "file": "app1/media/rubrics/3/logo.png",
+            "id": 3
+        },
+        {
+            "rubric_id": 4,
+            "file": "app1/media/rubrics/4/logo.png",
+            "id": 4
+        },
+        {
+            "rubric_id": 5,
+            "file": "app1/media/rubrics/5/logo.png",
+            "id": 5
+        },
+        {
+            "rubric_id": 6,
+            "file": "app1/media/rubrics/6/logo.png",
+            "id": 6
+        },
+        {
+            "rubric_id": 7,
+            "file": "app1/media/rubrics/7/logo.png",
+            "id": 7
+        }
+    ],
+    "RubricProductAssociation": [
+        {
+            "rubric_id": 1,
+            "product_id": 4,
+            "id": 1
+        },
+        {
+            "rubric_id": 4,
+            "product_id": 4,
+            "id": 2
+        },
+        {
+            "rubric_id": 2,
+            "product_id": 6,
+            "id": 5
+        },
+        {
+            "rubric_id": 5,
+            "product_id": 6,
+            "id": 6
+        },
+        {
+            "rubric_id": 6,
+            "product_id": 6,
+            "id": 7
+        },
+        {
+            "rubric_id": 6,
+            "product_id": 8,
+            "id": 8
+        },
+        {
+            "rubric_id": 7,
+            "product_id": 8,
+            "id": 9
+        },
+        {
+            "rubric_id": 1,
+            "product_id": 9,
+            "id": 24
+        },
+        {
+            "rubric_id": 3,
+            "product_id": 9,
+            "id": 27
+        },
+        {
+            "rubric_id": 2,
+            "product_id": 10,
+            "id": 28
+        },
+        {
+            "rubric_id": 7,
+            "product_id": 10,
+            "id": 29
+        }
+    ]
+}

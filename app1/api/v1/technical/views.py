@@ -29,6 +29,17 @@ async def export_data(
     return data
 
 
+@router.get("/view_data_from_json", dependencies=[Depends(current_superuser)])
+async def export_data(
+    session: AsyncSession = Depends(DBConfigurer.session_getter)
+):
+
+    data = await crud.read_all_data_from_json(
+        session=session
+    )
+    return data
+
+
 @router.get("/export_data", dependencies=[Depends(current_superuser)])
 async def export_data(
     session: AsyncSession = Depends(DBConfigurer.session_getter)
@@ -54,13 +65,11 @@ async def export_data(
     dependencies=[Depends(current_superuser)]
 )
 async def import_data(
-        data: Dict[str, List[Dict]],
-        session: AsyncSession = Depends(DBConfigurer.session_getter)
+    session: AsyncSession = Depends(DBConfigurer.session_getter)
 ):
 
     try:
         return await crud.import_data_from_json(
-            data=data,
             session=session,
         )
     except CustomException as exc:
@@ -68,7 +77,7 @@ async def import_data(
             status_code=exc.status_code,
             content={
                 "message": "Handled by Endpoint ExceptionHandler",
-                "detail": {exc.msg},
+                "detail": exc.msg,
             }
         )
 

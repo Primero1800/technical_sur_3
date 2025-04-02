@@ -3,9 +3,9 @@ __all__ = (
     "User",
     "AccessToken",
 
-    "Product",
     "Brand",
     "BrandImage",
+    "Product",
     "ProductImage",
     "Rubric",
     "RubricImage",

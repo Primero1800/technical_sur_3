@@ -5,6 +5,7 @@ from app1.core.settings import settings
 from app1.api.v1.auth import router as auth_router
 from app1.api.v1.users import router as users_router
 from app1.api.v1.users import messages_router
+from app1.api.v1.sessions import router as sessions_router
 from app1.api.v1.dependencies_example import router as deps_router
 from app1.api.v1.celery_tasks import router as celery_router
 from app1.api.v1.store import router as store_router
@@ -58,4 +59,10 @@ router.include_router(
 router.include_router(
     technical_router,
     tags=[settings.tags.TECH_TAG]
+)
+
+router.include_router(
+    sessions_router,
+    prefix=settings.tags.SESSIONS_PREFIX,
+    tags=[settings.tags.SESSIONS_TAG],
 )

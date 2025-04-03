@@ -114,6 +114,12 @@ class Tags(CustomSettings):
     SESSIONS_PREFIX: str
 
 
+class Sessions(CustomSettings):
+    SESSIONS_MAX_AGE: int
+    SESSIONS_ALGORYTM: str
+    SESSIONS_SECRET_KEY: str
+
+
 class Email(CustomSettings):
     MAIL_HOST: str
     MAIL_USERNAME: str
@@ -229,6 +235,7 @@ class Settings(CustomSettings):
     webhooks: WebHooks = WebHooks()
     logging: LoggingConfig = LoggingConfig()
     email: Email = Email()
+    sessions: Sessions = Sessions()
 
 
 settings = Settings()

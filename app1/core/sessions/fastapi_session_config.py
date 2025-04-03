@@ -47,7 +47,7 @@ cookie = SessionCookie(
 
 # SESSION BACKEND ################################
 
-backend = InMemoryBackend[UUID, SessionData]()
+backend = InDBBackend[UUID, SessionData]()
 
 
 # SESSION VERIFIER ################################
@@ -58,7 +58,7 @@ class BasicVerifier(SessionVerifier[UUID, SessionData]):
         *,
         identifier: str,
         auto_error: bool,
-        backend: InMemoryBackend[UUID, SessionData],
+        backend: InDBBackend[UUID, SessionData],
         auth_http_exception: HTTPException,
     ):
         self._identifier = identifier

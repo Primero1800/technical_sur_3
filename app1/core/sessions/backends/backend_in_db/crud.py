@@ -7,8 +7,9 @@ from fastapi_sessions.frontends.session_frontend import ID
 
 from app1.core.config import DBConfigurer
 from app1.core.models import Session
-from app1.core.sessions.utils import jwt_encode
+from app1.core.sessions.utils import jwt_encode, jwt_decode
 from app1.core.settings import settings
+from app1.scripts.convert_dates_back import convert_dates
 
 
 async def get(
@@ -49,8 +50,18 @@ async def delete(
     session_id: ID
 ):
     orm_model: Session = await get(session_id)
-
     async with DBConfigurer.Session() as session:
-        session.delete(orm_model)
+        await session.delete(orm_model)
         await session.commit()
+
+
+async def normalize_data(
+    data: dict,
+) -> dict:
+
+    data['data'] = jwt_decode(
+        token_cred=data['data'],
+    )
+    convert_dates(data['data'])
+    return data
 

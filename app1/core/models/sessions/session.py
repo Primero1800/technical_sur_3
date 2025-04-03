@@ -30,3 +30,9 @@ class Session(Base):
         'User',
         back_populates='session',
     )
+
+    def __str__(self):
+        return f"Session(user_id={self.user_id}, session_id={self.session_id})"
+
+    def __repr__(self):
+        return str(self)

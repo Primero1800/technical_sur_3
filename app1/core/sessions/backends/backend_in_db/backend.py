@@ -6,7 +6,6 @@ from fastapi_sessions.backends.session_backend import (
     SessionModel,
 )
 from fastapi_sessions.frontends.session_frontend import ID
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app1.exceptions import CustomException
 from . import crud
@@ -35,15 +34,18 @@ class InDBBackend(Generic[ID, SessionModel], SessionBackend[ID, SessionModel]):
 
         return data.to_dict()
 
-
     #TODO
-    # async def update(self, session_id: ID, data: SessionModel) -> None:
-    #     """Update an existing session."""
-    #     if self.data.get(session_id):
-    #         self.data[session_id] = data
-    #     else:
-    #         raise BackendError("session does not exist, cannot update")
+    async def update(self, session_id: ID, data: SessionModel) -> None:
+        """Update an existing session."""
+        if self.data.get(session_id):
+            self.data[session_id] = data
+        else:
+            raise BackendError("session does not exist, cannot update")
 
     async def delete(self, session_id: ID) -> None:
         """Delete an existing session"""
         await self.crud.delete(session_id)
+
+    async def normalize_data_from_db(self, data: SessionModel):
+        normalized_data = await self.crud.normalize_data(data)
+        return normalized_data

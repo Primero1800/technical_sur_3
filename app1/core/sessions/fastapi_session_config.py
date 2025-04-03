@@ -14,13 +14,15 @@ from pydantic import BaseModel
 from app1.core.settings import settings
 from app1.core.sessions.backends import (
     InMemoryBackend,
+    InDBBackend,
 )
 
 
 # SESSION DATA ################################
 
 class SessionData(BaseModel):
-    user: Annotated[Optional[Dict[str, Any]], None]
+    user_id: Annotated[Optional[int], None]
+    user_email: Annotated[Optional[str], None]
     data: Annotated[Dict[str, Any], {}]
 
 

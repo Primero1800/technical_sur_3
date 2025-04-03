@@ -5,6 +5,7 @@ import shutil
 from datetime import datetime
 from typing import Dict, Any
 
+from app1.scripts.convert_dates_back import convert_dates
 
 logger = logging.getLogger(__name__)
 
@@ -63,17 +64,3 @@ def json_datetime_serializer(
         return obj.isoformat()  # Преобразуем datetime в строку ISO 8601
     raise TypeError(f"Type {type(obj)} not serializable")
 
-
-def convert_dates(data: Dict[str, Any]) -> None:
-    for key, value in data.items():
-        if isinstance(value, list):
-            for item in value:
-                if isinstance(item, dict):
-                    convert_dates(item)
-        elif isinstance(value, dict):
-            convert_dates(value)
-        elif isinstance(value, str):
-            try:
-                data[key] = datetime.fromisoformat(value)
-            except ValueError:
-                pass

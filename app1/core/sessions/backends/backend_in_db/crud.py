@@ -55,9 +55,12 @@ async def delete(
         await session.commit()
 
 
-async def normalize_data(
-    data: dict,
+async def decode_data_to_dict(
+    data: dict | Session,
 ) -> dict:
+
+    if isinstance(data, Session):
+        data = data.to_dict()
 
     data['data'] = jwt_decode(
         token_cred=data['data'],

@@ -1,4 +1,4 @@
-from typing import Dict, Generic
+from typing import Generic
 
 from fastapi_sessions.backends.session_backend import (
     BackendError,
@@ -7,7 +7,6 @@ from fastapi_sessions.backends.session_backend import (
 )
 from fastapi_sessions.frontends.session_frontend import ID
 
-from app1.exceptions import CustomException
 from . import crud
 
 
@@ -31,8 +30,10 @@ class InDBBackend(Generic[ID, SessionModel], SessionBackend[ID, SessionModel]):
         data = await self.crud.get(session_id)
         if not data:
             return
+        data = await self.crud.decode_data_to_dict(data)
 
-        return data.to_dict()
+        return data
+
 
     #TODO
     async def update(self, session_id: ID, data: SessionModel) -> None:
@@ -45,7 +46,3 @@ class InDBBackend(Generic[ID, SessionModel], SessionBackend[ID, SessionModel]):
     async def delete(self, session_id: ID) -> None:
         """Delete an existing session"""
         await self.crud.delete(session_id)
-
-    async def normalize_data_from_db(self, data: SessionModel):
-        normalized_data = await self.crud.normalize_data(data)
-        return normalized_data

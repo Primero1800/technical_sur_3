@@ -56,8 +56,7 @@ async def create_session(
 async def whoami(
     session_data: fs.SessionData = Depends(fs.verifier),
 ):
-    decoded_session_data = await fs.backend.normalize_data_from_db(session_data)
-    return decoded_session_data
+    return session_data
 
 
 @router.post(

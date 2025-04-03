@@ -116,7 +116,7 @@ class Tags(CustomSettings):
 
 class Sessions(CustomSettings):
     SESSIONS_MAX_AGE: int
-    SESSIONS_ALGORYTM: str
+    SESSIONS_ALGORYTHM: str
     SESSIONS_SECRET_KEY: str
 
 

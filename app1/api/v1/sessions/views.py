@@ -8,13 +8,9 @@ from fastapi import APIRouter, Response, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app1.api.v1.users.schemas import UserRead
-from app1.core.auth.fastapi_users_config import current_user, fastapi_users, current_user_or_none
-from app1.core.auth.user_manager import get_user_manager
+from app1.core.auth.fastapi_users_config import current_user_or_none
 from app1.core.config import DBConfigurer
 from app1.core.sessions import fastapi_session_config as fs
-
-if TYPE_CHECKING:
-    from app1.core.models import User
 
 
 logger = logging.getLogger(__name__)
@@ -35,9 +31,12 @@ async def create_session(
     user_dict = UserRead(**user.to_dict()).model_dump() if user else None
     user_session_uuid = uuid4()
 
-    data = fs.SessionData(user=user_dict, data={
-        "day": "monday",
-        "time": datetime.now(tz=pytz.timezone("Europe/Moscow"))
+    data = fs.SessionData(
+        user_id=user.id if user else None,
+        user_email=user.email if user else None,
+        data={
+            "day": "monday",
+            "time": datetime.now(tz=pytz.timezone("Europe/Moscow"))
     })
 
     await fs.backend.create(user_session_uuid, data)

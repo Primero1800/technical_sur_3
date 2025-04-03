@@ -30,6 +30,8 @@ add
 
     python-slugify[unicode]
 
+    fastapi-sessions
+
 
 
 add --group dev

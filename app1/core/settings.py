@@ -110,6 +110,9 @@ class Tags(CustomSettings):
     PRODUCTS_TAG: str
     PRODUCTS_PREFIX: str
 
+    SESSIONS_TAG: str
+    SESSIONS_PREFIX: str
+
 
 class Email(CustomSettings):
     MAIL_HOST: str

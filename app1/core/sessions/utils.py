@@ -1,5 +1,6 @@
 import datetime
 import jwt
+import pytz
 
 from app1.core.settings import settings
 
@@ -10,7 +11,10 @@ def jwt_encode(
         algorithm: str = settings.sessions.SESSIONS_ALGORYTHM
 ):
 
-    now = datetime.datetime.now(datetime.UTC)
+    now = datetime.datetime.now(
+        tz=pytz.timezone(settings.app.APP_TIMEZONE)
+    )
+
     return jwt.encode(
         payload={
             'iat': now,

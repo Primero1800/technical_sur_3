@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, Optional, TYPE_CHECKING, Dict
 from uuid import uuid4, UUID
 
+import pytz
 from fastapi import APIRouter, Response, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,71 +23,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-async def get_current_user_safe(user: Any = Depends(current_user)) -> Optional["User"]:
-    print(1)
-    try:
-        return user
-    except Exception as exc:
-        logger.error("inside safe get user ", exc_info=exc)
-        return None
-
-
-async def get_current_user_safe2(
-    user: Any = Depends(current_user)
-) -> Any | None:
-    print(1)
-    return user if user else None
-
-
-async def get_current_user_safe3() -> Optional["User"]:
-    try:
-        user = await current_user()
-        return user
-    except HTTPException as exc:
-        if exc.status_code == status.HTTP_401_UNAUTHORIZED:
-            return None  # Или можно выполнить какое-то логирование
-        raise exc  # Если это не 401 ошибка, выбрасываем дальше
-
-
-async def get_current_user_safe4(request: Request) -> Optional["User"]:
-    try:
-        user = await fastapi_users.current_user(active=True, verified=True)(request)
-        return user
-    except HTTPException as exc:
-        if exc.status_code == status.HTTP_401_UNAUTHORIZED:
-            # Логируем ошибку если нужно
-            return None
-        raise
-
-
-async def get_current_user_safe5(request: Request) -> Optional["User"]:
-    try:
-        # Попробуйте извлечь пользователя из зависимости
-        user = await fastapi_users.current_user(active=True, verified=True)(request)
-        return user
-    except HTTPException as exc:
-        if exc.status_code == status.HTTP_401_UNAUTHORIZED:
-            # Возвращаем None вместо выбрасывания ошибки
-            return None
-        raise
-
-
-async def get_current_user_safe6(request: Request) -> Optional["User"]:
-    """
-    Обертка для получения текущего пользователя.
-    Если пользователь не аутентифицирован, возвращает None.
-    """
-    try:
-        print(1)
-        user = await current_user(user_manager=Depends(get_user_manager))
-        print(11)
-        return user
-    except Exception as exc:
-        print(2)
-        logger.error("Catched ", exc_info=exc)
-        return None
-
-
 @router.post(
     "/create_session",
 )
@@ -99,7 +35,10 @@ async def create_session(
     user_dict = UserRead(**user.to_dict()).model_dump() if user else None
     user_session_uuid = uuid4()
 
-    data = fs.SessionData(user=user_dict, data={"day": "monday", "time": datetime.now()})
+    data = fs.SessionData(user=user_dict, data={
+        "day": "monday",
+        "time": datetime.now(tz=pytz.timezone("Europe/Moscow"))
+    })
 
     await fs.backend.create(user_session_uuid, data)
     fs.cookie.attach_to_response(response, user_session_uuid)
@@ -120,7 +59,7 @@ async def create_session(
     dependencies=[Depends(fs.cookie)]
 )
 async def whoami(
-    session_data: fs.SessionData = Depends(fs.verifier)
+    session_data: fs.SessionData = Depends(fs.verifier),
 ):
     return session_data
 
@@ -130,7 +69,8 @@ async def whoami(
 )
 async def del_session(
     response: Response,
-    session_id: UUID = Depends(fs.cookie)
+    session_id: UUID = Depends(fs.cookie),
+    session: AsyncSession = Depends(DBConfigurer.session_getter),
 ):
     await fs.backend.delete(session_id)
     fs.cookie.delete_from_response(response)

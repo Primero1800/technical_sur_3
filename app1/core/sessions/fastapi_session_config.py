@@ -4,15 +4,17 @@ from fastapi_sessions.frontends.implementations import (
     SessionCookie,
     CookieParameters,
 )
-from fastapi_sessions.backends.implementations import (
-    InMemoryBackend,
-)
 from fastapi_sessions.session_verifier import SessionVerifier
 from fastapi import HTTPException
 
 from uuid import UUID
 
 from pydantic import BaseModel
+
+from app1.core.settings import settings
+from app1.core.sessions.backends import (
+    InMemoryBackend,
+)
 
 
 # SESSION DATA ################################
@@ -25,7 +27,7 @@ class SessionData(BaseModel):
 # SESSION FRONTEND ############################
 
 class CustomCookieParameters(CookieParameters):
-    max_age: int = 3600
+    max_age: int = settings.sessions.SESSIONS_MAX_AGE
 
 
 cookie_params = CustomCookieParameters()
@@ -33,10 +35,10 @@ cookie_params = CustomCookieParameters()
 
 # Uses UUID
 cookie = SessionCookie(
-    cookie_name="cookie",
+    cookie_name="x-session-id",
     identifier="general_verifier",
     auto_error=True,
-    secret_key="DONOTUSE",
+    secret_key=settings.sessions.SESSIONS_SECRET_KEY,
     cookie_params=cookie_params,
 )
 

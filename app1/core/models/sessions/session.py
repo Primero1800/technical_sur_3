@@ -1,8 +1,9 @@
+import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from fastapi_users_db_sqlalchemy.generics import TIMESTAMPAware, now_utc
-from sqlalchemy import ForeignKey
+from fastapi_users_db_sqlalchemy.generics import TIMESTAMPAware
+from sqlalchemy import ForeignKey, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app1.core.config import DBConfigurer
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class Session(Base):
-    session_id: Mapped[int] = mapped_column(primary_key=True)
+    session_id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
     user_id: Mapped[int] = mapped_column(
         ForeignKey(f"{DBConfigurer.utils.camel2snake('User')}.id", ondelete="CASCADE"),
         nullable=True,
@@ -22,10 +23,10 @@ class Session(Base):
     user_email: Mapped[str] = mapped_column(nullable=True)
     data: Mapped[str]
     expired_at: Mapped[datetime] = mapped_column(
-        TIMESTAMPAware(timezone=True), index=True, nullable=False, default=now_utc
+        TIMESTAMPAware(timezone=True), index=True, nullable=False
     )
 
     user: Mapped['User'] = relationship(
         'User',
-        back_populates='user',
+        back_populates='session',
     )

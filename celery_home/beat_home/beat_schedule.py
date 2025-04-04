@@ -18,13 +18,13 @@ schedule = {
     # },
     'run-every-hour-2': {
         'task': 'task_delete_expired_sessions',
-        'schedule': Crontabs.every_hour,
-        'args': (6000,)
+        'schedule': Crontabs.every_day,
+        'args': tuple()
     },
     'run-every-hour-3': {
         'task': 'task_delete_expired_tokens',
-        'schedule': Crontabs.every_hour,
-        'args': (6000,)
+        'schedule': Crontabs.every_day,
+        'args': tuple()
     },
     # 'run-every-10-minutes': {
     #     'task': 'task_beat_test_every_minute',

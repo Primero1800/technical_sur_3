@@ -2,6 +2,8 @@ import asyncio
 import logging
 from datetime import timedelta
 from typing import Sequence
+
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select, Result, func, delete
 
 from app1.core.config import DBConfigurer
@@ -34,7 +36,7 @@ async def delete_expired_tokens_from_db(
         await session.commit()
         logger.info(f"Expired tokens to deleted")
 
-        return list(result_to_return)
+        return jsonable_encoder(list(result_to_return))
 
 
 if __name__ == "__main__":

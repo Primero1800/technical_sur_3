@@ -1,6 +1,7 @@
 import asyncio
 import logging
 
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select, func, Result, delete
 
 from app1.core.config import DBConfigurer
@@ -28,7 +29,7 @@ async def delete_expired_sessions_from_db(
         await session.commit()
         logger.info(f"Expired sessions to deleted")
 
-        return list(result_to_return)
+        return jsonable_encoder(list(result_to_return))
 
 
 if __name__ == "__main__":

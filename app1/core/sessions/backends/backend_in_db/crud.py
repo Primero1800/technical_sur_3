@@ -1,12 +1,14 @@
 import logging
 from datetime import datetime, timedelta
 from sqlite3 import IntegrityError
+from typing import List, Sequence
 
 import pytz
 from fastapi import status
 from fastapi.encoders import jsonable_encoder
 from fastapi_sessions.backends.session_backend import SessionModel
 from fastapi_sessions.frontends.session_frontend import ID
+from sqlalchemy import select, Result
 
 from app1.core.config import DBConfigurer
 from app1.core.models import Session
@@ -29,6 +31,28 @@ async def get(
     async with DBConfigurer.Session() as session:
         orm_model: Session = await session.get(Session, session_id)
         return orm_model
+
+
+async def get_all_raw() -> List[Session] | Sequence[Session]:
+    async with DBConfigurer.Session() as session:
+        stmt = select(Session).order_by(Session.expired_at)
+        result: Result = await session.execute(stmt)
+        orm_models = result.scalars().all()
+        return orm_models
+
+
+async def get_all() -> list:
+    orm_models = await get_all_raw()
+    result = []
+    for orm_model in orm_models:
+        try:
+            data = await decode_data_to_dict(orm_model)
+            result.append(data)
+        except CustomException:
+            raise
+    return result
+
+
 
 
 async def create(

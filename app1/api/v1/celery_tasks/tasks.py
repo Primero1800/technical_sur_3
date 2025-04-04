@@ -79,3 +79,43 @@ def beat_test_every_minute(self, number: int = 0) -> dict:
         "meta": meta,
         "returned_value": result
     }
+
+
+@app_celery.task(bind=True, name="task_delete_expired_tokens")
+def delete_expired_tokens(self) -> dict:
+    meta = {
+        'app_name': '3_sur_app1',
+        'task_name': self.name,
+        'args': tuple(),
+    }
+    from app1.scripts.delete_expired_tokens import delete_expired_tokens_from_db as main_func
+    loop = asyncio.get_event_loop()
+    if loop.is_running():
+        result = asyncio.run(main_func())
+    else:
+        result = loop.run_until_complete(main_func())
+    return {
+        "meta": meta,
+        "returned_value": result
+    }
+
+
+@app_celery.task(bind=True, name="task_delete_expired_sessions")
+def delete_expired_sessions(self) -> dict:
+    meta = {
+        'app_name': '3_sur_app1',
+        'task_name': self.name,
+        'args': tuple(),
+    }
+    from app1.scripts.delete_expired_sessions import delete_expired_sessions_from_db as main_func
+    loop = asyncio.get_event_loop()
+    if loop.is_running():
+        result = asyncio.run(main_func())
+    else:
+        result = loop.run_until_complete(main_func())
+    return {
+        "meta": meta,
+        "returned_value": result
+    }
+
+

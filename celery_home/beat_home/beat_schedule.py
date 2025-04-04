@@ -11,8 +11,18 @@ schedule = {
     #     'schedule': Crontabs.every_2_minutes,
     #     'args': (200,)
     # },
-    'run-every-hour': {
-        'task': 'task_beat_test_every_minute',
+    # 'run-every-hour': {
+    #     'task': 'task_beat_test_every_minute',
+    #     'schedule': Crontabs.every_hour,
+    #     'args': (6000,)
+    # },
+    'run-every-hour-2': {
+        'task': 'task_delete_expired_sessions',
+        'schedule': Crontabs.every_hour,
+        'args': (6000,)
+    },
+    'run-every-hour-3': {
+        'task': 'task_delete_expired_tokens',
         'schedule': Crontabs.every_hour,
         'args': (6000,)
     },

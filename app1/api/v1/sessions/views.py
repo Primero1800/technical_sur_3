@@ -5,10 +5,11 @@ from uuid import uuid4, UUID
 
 import pytz
 from fastapi import APIRouter, Response, Depends, status
+from fastapi.responses import ORJSONResponse
 
 from app1.core.auth.fastapi_users_config import current_user_or_none
 from app1.core.sessions import fastapi_session_config as fs
-
+from app1.exceptions import CustomException
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +34,16 @@ async def create_session(
             "day": "monday",
             "time": datetime.now(tz=pytz.timezone("Europe/Moscow"))
     })
-
-    await fs.backend.create(user_session_uuid, data)
+    try:
+        await fs.backend.create(user_session_uuid, data)
+    except CustomException as exc:
+        return ORJSONResponse(
+            status_code=exc.status_code,
+            content={
+                "message": "Handled by Sessions Exception Handler",
+                "detail": exc.msg,
+            }
+        )
     fs.cookie.attach_to_response(response, user_session_uuid)
 
     username = user.email if user and hasattr(user, "email") else "Anonimous"
@@ -66,7 +75,16 @@ async def del_session(
     response: Response,
     session_id: UUID = Depends(fs.cookie),
 ):
-    await fs.backend.delete(session_id)
+    try:
+        await fs.backend.delete(session_id)
+    except CustomException as exc:
+        return ORJSONResponse(
+            status_code=exc.status_code,
+            content={
+                "message": "Handled by Sessions Exception Handler",
+                "detail": exc.msg,
+            }
+        )
     fs.cookie.delete_from_response(response)
     return "deleted session"
 
@@ -82,7 +100,16 @@ async def update_session(
 ):
 
     session_data.data.update(data)
-    await fs.backend.update(session_id, session_data)
+    try:
+        await fs.backend.update(session_id, session_data)
+    except CustomException as exc:
+        return ORJSONResponse(
+            status_code=exc.status_code,
+            content={
+                "message": "Handled by Sessions Exception Handler",
+                "detail": exc.msg,
+            }
+        )
 
     return "session updated"
 
@@ -91,11 +118,20 @@ async def update_session(
     "/clear_session",
     dependencies=[Depends(fs.cookie)]
 )
-async def update_session(
+async def clear_session(
         session_id: UUID = Depends(fs.cookie),
         session_data: fs.SessionData = Depends(fs.verifier)
 ):
     session_data.data.clear()
-    await fs.backend.update(session_id, session_data)
+    try:
+        await fs.backend.update(session_id, session_data)
+    except CustomException as exc:
+        return ORJSONResponse(
+            status_code=exc.status_code,
+            content={
+                "message": "Handled by Sessions Exception Handler",
+                "detail": exc.msg,
+            }
+        )
 
     return "session cleared"

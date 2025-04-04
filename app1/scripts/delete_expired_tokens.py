@@ -14,7 +14,7 @@ app_logger = logging.getLogger(__name__)
 # PYTHONPATH=.. python scripts/delete_expired_tokens.py
 async def delete_expired_tokens_from_db(
         logger: logging.Logger = app_logger,
-) -> Sequence[AccessToken]:
+) -> list[AccessToken]:
 
     logger.info("SCRIPT delete_expired_tokens_from_db STARTED.")
     from app1.core.settings import settings
@@ -34,7 +34,7 @@ async def delete_expired_tokens_from_db(
         await session.commit()
         logger.info(f"Expired tokens to deleted")
 
-        return result_to_return
+        return list(result_to_return)
 
 
 if __name__ == "__main__":
